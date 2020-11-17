@@ -262,9 +262,12 @@ public class communicator {
 			System.out.println(e);
 	    	}
 		
+<<<<<<< Updated upstream
 		//System.out.println(instance.msg);
                 //writer.write(instance, instance_handle);
 
+=======
+>>>>>>> Stashed changes
                 try {
                     Thread.sleep(sendPeriodMillis);
                 } catch (InterruptedException ix) {

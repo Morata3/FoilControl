@@ -1,0 +1,4 @@
+struct imu {
+	string name; 
+   	string<128> datos;
+};

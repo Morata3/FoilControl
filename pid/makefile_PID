@@ -1,0 +1,99 @@
+# If undefined in the environment default NDDSHOME to install dir
+ifndef NDDSHOME
+NDDSHOME := "/home/pi/rti_connext_dds-6.0.1"
+endif
+
+SOURCE_DIR =
+IMU_DIR =./imu/
+HEIGHT_DIR =./height
+
+TARGET_ARCH = armv6vfphLinux3.xgcc4.7.2
+TARGET_IMU = imu
+TARGET_HEIGHT = height
+
+ifndef COMPILER
+COMPILER = arm-linux-gnueabihf-gcc
+endif
+COMPILER_FLAGS =
+ifndef LINKER
+LINKER = arm-linux-gnueabihf-gcc
+endif
+LINKER_FLAGS =
+SYSLIBS = -ldl -lnsl -lm -lpthread -lrt
+DEFINES = -fpic -DRTI_UNIX -DRTI_LINUX -march=armv6 -mfpu=vfp -mfloat-abi=hard -mlong-calls 
+ifndef DEBUG
+DEBUG=0 
+endif
+ifeq ($(DEBUG),1)
+COMPILER_FLAGS += -g -O0
+LINKER_FLAGS += -g
+DEBUG_SFX = d
+else
+DEBUG_SFX = 
+endif
+ 
+ifndef SHAREDLIB
+SHAREDLIB=0
+endif
+
+ifeq ($(SHAREDLIB),1)
+SHAREDLIB_SFX = 
+else
+SHAREDLIB_SFX = z
+DEFINES += -DRTI_STATIC
+endif
+
+
+
+INCLUDES = -I. -I$(NDDSHOME)/include -I$(NDDSHOME)/include/ndds 
+       
+LIBS = -L$(NDDSHOME)/lib/$(TARGET_ARCH) \
+        \
+        \
+        -lnddsc$(SHAREDLIB_SFX)$(DEBUG_SFX) -lnddscore$(SHAREDLIB_SFX)$(DEBUG_SFX) \
+        $(SYSLIBS)
+
+CDRSOURCES_IMU = imu.idl
+CDRSOURCES_HEIGHT = heightSensor.idl
+SOURCES_IMU = $(IMU_DIR)imuPlugin.c $(IMU_DIR)imu.c $(IMU_DIR)imuSupport.c $(SOURCE_DIR)PID_roll.c $(SOURCE_DIR)PID_pitch.c
+
+COMMONSOURCES_IMU = $(notdir $(SOURCES_IMU))
+
+EXEC_IMU          = imu_subscriber imu_publisher
+DIRECTORIES_IMU   = objs.dir objs/$(TARGET_ARCH).dir objs/$(TARGET_ARCH)/$(TARGET_IMU).dir
+COMMONOBJS_IMU    = $(COMMONSOURCES_IMU:%.c=objs/$(TARGET_ARCH)/$(TARGET_IMU)/%.o)
+
+# We actually stick the objects in a sub directory to keep your directory clean.
+$(TARGET_ARCH) : $(DIRECTORIES_IMU) $(COMMONOBJS_IMU) \
+	$(EXEC_IMU:%=objs/$(TARGET_ARCH)/$(TARGET_IMU)/%.o) \
+	$(EXEC_IMU:%=objs/$(TARGET_ARCH)/$(TARGET_IMU)/%)
+
+objs/$(TARGET_ARCH)/$(TARGET_IMU)/% : objs/$(TARGET_ARCH)/$(TARGET_IMU)/%.o objs/$(TARGET_ARCH)/$(TARGET_IMU)/PID*
+	$(LINKER) $(LINKER_FLAGS)   -o $@ $@.o $(COMMONOBJS_IMU) $(LIBS)
+
+objs/$(TARGET_ARCH)/$(TARGET_IMU)/%.o : $(IMU_DIR)%.c   $(IMU_DIR)imu.h 
+	$(COMPILER) $(COMPILER_FLAGS)  -o $@ $(DEFINES) $(INCLUDES) -c $<
+
+objs/$(TARGET_ARCH)/$(TARGET_IMU)/PID%.o : $(SOURCE_DIR)PID%.c   $(SOURCE_DIR)PID.h 
+	$(COMPILER) -o $@ $(DEFINES) -c $<
+
+
+
+#
+# Uncomment these lines if you want the support files regenerated when idl
+# file is modified
+#
+#
+#  $(SOURCE_DIR)imuPlugin.c $(SOURCE_DIR)imu.c $(SOURCE_DIR)imuSupport.c \
+#  $(SOURCE_DIR)imu.h $(SOURCE_DIR)imuPlugin.h $(SOURCE_DIR)imuSupport.h : \
+#		$(SOURCE_DIR)imu.idl
+#	$(NDDSHOME)/bin/rtiddsgen $(SOURCE_DIR)imu.idl -replace -language C
+#
+# Here is how we create those subdirectories automatically.
+%.dir : 
+	@echo "Checking directory $*"
+	@if [ ! -d $* ]; then \
+		echo "Making directory $*"; \
+		mkdir -p $* ; \
+	fi;
+
