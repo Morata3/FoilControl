@@ -1,0 +1,4 @@
+struct gps { 
+	string name; 
+   	string<128> datos;
+};
