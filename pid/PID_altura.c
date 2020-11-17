@@ -6,33 +6,6 @@
 #include <math.h>
 
 
-<<<<<<< Updated upstream
-int main(){
-
-    const int setpoint=80,kp=2,ki=3,kd=1;
-    float  entrada=0,inicio=0,flag=1,lastError=0,error=0,integralError=0,derivadaError=0,salida=0,dt=0.001;
-
-    while(flag){
-
-      srand(time(NULL));
-      entrada = 75 + rand() % 11;
-
-      printf("\nÁngulo medido por el sensor => %f\n",entrada);
-
-      error = (setpoint - entrada);
-      if(inicio!=0){
-        integralError = integralError + (error * dt);
-        derivadaError = (error - lastError) / dt;
-      }
-      salida = kp*error + ki*integralError + kd*derivadaError;
-      lastError = error;
-
-      printf("\nSalida controlador PID... => %f\n",salida);
-      inicio=1;
-      sleep(dt);
-
-    }
-=======
 float pid_height(float entrada){
 
     const int setpoint=80,kp=2,ki=3,kd=1;
@@ -55,7 +28,6 @@ float pid_height(float entrada){
     inicio=1;
     sleep(dt);
 
->>>>>>> Stashed changes
 
 
     return 0;
