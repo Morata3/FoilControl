@@ -233,7 +233,7 @@ int subscriber_main(int domainId, int sample_count)
 
 int main(int argc, char *argv[])
 {
-    int domain_id = 0;
+    int domain_id = domainHeight;
     int sample_count = 0; /* infinite loop */
 
     if (argc >= 2) {

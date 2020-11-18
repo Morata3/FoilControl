@@ -240,7 +240,7 @@ int subscriber_main(int domainId, int sample_count)
 
 int main(int argc, char *argv[])
 {
-    int domain_id = 1;
+    int domain_id = domainImu;
     int sample_count = 0; /* infinite loop */
 
     if (argc >= 2) {
