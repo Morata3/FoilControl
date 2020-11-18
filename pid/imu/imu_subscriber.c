@@ -4,6 +4,7 @@
 #include "imu.h"
 #include "imuSupport.h"
 #include "PID.h"
+#include "pid/pid_publisher.h"
 
 void imuListener_on_requested_deadline_missed(
     void* listener_data,
@@ -93,8 +94,13 @@ void imuListener_on_data_available(
 		index ++;
 	    }
 	   printf("Pitch: %s Roll:%s\n",pitch,roll); 
-	   pid_roll(atof(roll)); 
-	   pid_pitch(atof(pitch));
+	   float correct_pitch;
+	   float correct_roll;
+	   correct_pitch=pid_roll(atof(roll)); 
+	   correct_roll=pid_pitch(atof(pitch));
+
+	   // Publicamos os datos do pitch e o roll correxidos
+	   publisher_pid(correct_pitch,correct_roll,0.00);
         }
     }
 
@@ -198,6 +204,10 @@ int subscriber_main(int domainId, int sample_count)
         subscriber_shutdown(participant);
         return -1;
     }
+   
+    /*Set up PID publisher*/
+    setUp_pid (domainPid,0);
+
 
     /* Set up a data reader listener */
     reader_listener.on_requested_deadline_missed  =

@@ -4,6 +4,7 @@
 #define domainImu 0
 #define domainHeight 1
 #define domainGps 2
+#define domainPid 3
 
 
 
