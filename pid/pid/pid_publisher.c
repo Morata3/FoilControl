@@ -17,8 +17,7 @@ int count = 0;
 struct DDS_Duration_t send_period = {4,0};
 
 /* Delete all entities */
-static int publisher_shutdown(
-    DDS_DomainParticipant *participant)
+int pid_shutdown()
 {
 
     DDS_ReturnCode_t retcode;
@@ -71,7 +70,7 @@ int setUp_pid(int domainId, int sample_count)
         NULL /* listener */, DDS_STATUS_MASK_NONE);
     if (participant == NULL) {
         fprintf(stderr, "create_participant error\n");
-        publisher_shutdown(participant);
+        pid_shutdown();
         return -1;
     }
 
@@ -82,7 +81,7 @@ int setUp_pid(int domainId, int sample_count)
         DDS_STATUS_MASK_NONE);
     if (publisher == NULL) {
         fprintf(stderr, "create_publisher error\n");
-        publisher_shutdown(participant);
+        pid_shutdown();
         return -1;
     }
 
@@ -92,7 +91,7 @@ int setUp_pid(int domainId, int sample_count)
         participant, type_name);
     if (retcode != DDS_RETCODE_OK) {
         fprintf(stderr, "register_type error %d\n", retcode);
-        publisher_shutdown(participant);
+        pid_shutdown();
         return -1;
     }
 
@@ -104,7 +103,7 @@ int setUp_pid(int domainId, int sample_count)
         DDS_STATUS_MASK_NONE);
     if (topic == NULL) {
         fprintf(stderr, "create_topic error\n");
-        publisher_shutdown(participant);
+        pid_shutdown();
         return -1;
     }
 
@@ -115,13 +114,13 @@ int setUp_pid(int domainId, int sample_count)
         &DDS_DATAWRITER_QOS_DEFAULT, NULL /* listener */, DDS_STATUS_MASK_NONE);
     if (writer == NULL) {
         fprintf(stderr, "create_datawriter error\n");
-        publisher_shutdown(participant);
+        pid_shutdown();
         return -1;
     }
     pid_writer = pidDataWriter_narrow(writer);
     if (pid_writer == NULL) {
         fprintf(stderr, "DataWriter narrow error\n");
-        publisher_shutdown(participant);
+        pid_shutdown();
         return -1;
     }
 
@@ -129,7 +128,7 @@ int setUp_pid(int domainId, int sample_count)
     instance = pidTypeSupport_create_data_ex(DDS_BOOLEAN_TRUE);
     if (instance == NULL) {
         fprintf(stderr, "pidTypeSupport_create_data error\n");
-        publisher_shutdown(participant);
+        pid_shutdown();
         return -1;
     }
     return 0;

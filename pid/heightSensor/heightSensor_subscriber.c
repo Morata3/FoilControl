@@ -4,6 +4,7 @@
 #include "heightSensor.h"
 #include "heightSensorSupport.h"
 #include "PID.h"
+#include "pid/pid_publisher.h"
 
 void heightSensorListener_on_requested_deadline_missed(
     void* listener_data,
@@ -87,7 +88,9 @@ void heightSensorListener_on_data_available(
 		index ++;
 	    }
 	   printf("Height: %s\n",height); 
-	   pid_height(atof(height)); 
+	   float correct_height;
+	   correct_height=pid_height(atof(height)); 
+	   publisher_pid(0,0,correct_height);
 	}
     }
 
@@ -192,6 +195,10 @@ int subscriber_main(int domainId, int sample_count)
         return -1;
     }
 
+
+    /*Set up PID publisher*/
+    setUp_pid(domainPid,0);
+
     /* Set up a data reader listener */
     reader_listener.on_requested_deadline_missed  =
     heightSensorListener_on_requested_deadline_missed;
@@ -227,7 +234,9 @@ int subscriber_main(int domainId, int sample_count)
         NDDS_Utility_sleep(&poll_period);
     }
 
+
     /* Cleanup and delete all entities */ 
+    pid_shutdown();
     return subscriber_shutdown(participant);
 }
 

@@ -6,6 +6,7 @@
 #include "PID.h"
 #include "pid/pid_publisher.h"
 
+
 void imuListener_on_requested_deadline_missed(
     void* listener_data,
     DDS_DataReader* reader,
@@ -244,7 +245,9 @@ int subscriber_main(int domainId, int sample_count)
         NDDS_Utility_sleep(&poll_period);
     }
 
-    /* Cleanup and delete all entities */ 
+    /* Cleanup and delete all entities */
+    pid_shutdown();
+
     return subscriber_shutdown(participant);
 }
 
