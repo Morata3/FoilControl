@@ -6,6 +6,7 @@ import com.rti.dds.domain.*;
 import com.rti.dds.infrastructure.*;
 import com.rti.dds.publication.*;
 import com.rti.dds.topic.*;
+import com.rti.dds.subscription.*;
 import com.rti.ndds.config.*;
 
 //==========  JAVA ARDUINO CONECTION ====
@@ -32,6 +33,7 @@ public class communicator {
 	private static final int domain_height = 0;
 	private static final int domain_imu = 1;
 	private static final int domain_gps = 2;
+	private static final int domain_pid = 3;
 	///////////////////////////////
 	
 	private static String msg = new String();
@@ -113,7 +115,42 @@ public class communicator {
 		}
 	}
 
+     private static class pidListener extends DataReaderAdapter {
 
+        pidSeq _dataSeq = new pidSeq();
+        SampleInfoSeq _infoSeq = new SampleInfoSeq();
+
+        public void on_data_available(DataReader reader) {
+            pidDataReader pidReader =
+            (pidDataReader)reader;
+
+            try {
+                pidReader.take(
+                    _dataSeq, _infoSeq,
+                    ResourceLimitsQosPolicy.LENGTH_UNLIMITED,
+                    SampleStateKind.ANY_SAMPLE_STATE,
+                    ViewStateKind.ANY_VIEW_STATE,
+                    InstanceStateKind.ANY_INSTANCE_STATE);
+
+                for(int i = 0; i < _dataSeq.size(); ++i) {
+                    SampleInfo info = (SampleInfo)_infoSeq.get(i);
+
+                    if (info.valid_data) {
+                        System.out.println(
+                            ((pid)_dataSeq.get(i)).toString("Received",0));
+
+                    }
+                }
+            } catch (RETCODE_NO_DATA noData) {
+                // No data to process
+            } finally {
+                pidReader.return_loan(_dataSeq, _infoSeq);
+            }
+        }
+    }
+
+
+	
     public static void publisherMain(int domainId, int sampleCount) {
        
         DomainParticipant participant_height = null;
@@ -125,6 +162,19 @@ public class communicator {
         Publisher publisher_imu = null;
         Topic topic_imu = null;
         imuDataWriter writer_imu = null;
+
+	DomainParticipant participant_gps = null;
+        Publisher publisher_gps = null;
+        Topic topic_gps = null;
+        gpsDataWriter writer_gps = null;
+
+	//Subscriber PID
+	DomainParticipant participant = null;
+        Subscriber subscriber = null;
+        Topic topic = null;
+        DataReaderListener listener = null;
+        pidDataReader reader = null;
+
 
         try {
 	
@@ -230,6 +280,108 @@ public class communicator {
             /* Create data sample for writing */
             imu instance_imu = new imu();
             InstanceHandle_t instance_handle_imu = InstanceHandle_t.HANDLE_NIL;
+		
+    				// *** GPS *** //
+				//-------------//
+	    
+	    // --- Create participant --- //
+            participant_gps = DomainParticipantFactory.TheParticipantFactory.
+            create_participant(
+                domain_gps, DomainParticipantFactory.PARTICIPANT_QOS_DEFAULT,
+                null /* listener */, StatusKind.STATUS_MASK_NONE);
+            if (participant_gps == null) {
+                System.err.println("create_participant error GPS\n");
+                return;
+            }        
+
+            // --- Create publisher --- //
+            publisher_gps = participant_gps.create_publisher(
+                DomainParticipant.PUBLISHER_QOS_DEFAULT, null /* listener */,
+                StatusKind.STATUS_MASK_NONE);
+            if (publisher_gps == null) {
+                System.err.println("create_publisher error\n");
+                return;
+            }                   
+
+            // --- Create topic --- //
+            String typeName_gps = gpsTypeSupport.get_type_name();
+            gpsTypeSupport.register_type(participant_gps, typeName_gps);
+
+            topic_gps = participant_gps.create_topic(
+                "gps",
+                typeName_gps, DomainParticipant.TOPIC_QOS_DEFAULT,
+                null /* listener */, StatusKind.STATUS_MASK_NONE);
+            if (topic_gps == null) {
+                System.err.println("create_topic error\n");
+                return;
+            }           
+
+            // --- Create writer --- //
+            writer_gps = (gpsDataWriter)
+            publisher_gps.create_datawriter(
+                topic_gps, Publisher.DATAWRITER_QOS_DEFAULT,
+                null /* listener */, StatusKind.STATUS_MASK_NONE);
+            if (writer_gps == null) {
+                System.err.println("create_datawriter error\n");
+                return;
+            }           
+
+            // --- Write --- //
+            gps instance_gps = new gps();
+            InstanceHandle_t instance_handle_gps = InstanceHandle_t.HANDLE_NIL;
+
+
+				// *** PID *** //
+				//------------//
+		
+	    // --- Create participant --- //
+
+            participant = DomainParticipantFactory.TheParticipantFactory.
+            create_participant(
+                domainId, DomainParticipantFactory.PARTICIPANT_QOS_DEFAULT,
+                null /* listener */, StatusKind.STATUS_MASK_NONE);
+            if (participant == null) {
+                System.err.println("create_participant error PID\n");
+                return;
+            }                         
+
+            // --- Create subscriber --- //       
+
+            subscriber = participant.create_subscriber(
+                DomainParticipant.SUBSCRIBER_QOS_DEFAULT, null /* listener */,
+                StatusKind.STATUS_MASK_NONE);
+            if (subscriber == null) {
+                System.err.println("create_subscriber error\n");
+                return;
+            }     
+
+            // --- Create topic --- //
+
+            String typeName = pidTypeSupport.get_type_name(); 
+            pidTypeSupport.register_type(participant, typeName); 
+            
+            topic = participant.create_topic(
+                "Example pid",
+                typeName, DomainParticipant.TOPIC_QOS_DEFAULT,
+                null /* listener */, StatusKind.STATUS_MASK_NONE);
+            if (topic == null) {
+                System.err.println("create_topic error\n");
+                return;
+            }                     
+
+            // --- Create reader --- //
+
+            listener = new pidListener(); 
+
+            reader = (pidDataReader)
+            subscriber.create_datareader(
+                topic, Subscriber.DATAREADER_QOS_DEFAULT, listener,
+                StatusKind.STATUS_MASK_ALL);
+            if (reader == null) {
+                System.err.println("create_datareader error\n");
+                return;
+            }                         
+
 
 	    /////////// PUBLICAR ////////
 	    ////////////////////////////
@@ -255,6 +407,13 @@ public class communicator {
 				instance_imu.datos = inputLine;
 				writer_imu.write(instance_imu, instance_handle_imu);
 				System.out.println(instance_imu.datos);
+			}
+			else if (inputLine.startsWith("Speed")){
+				instance_gps.name = "Speed";
+                                instance_gps.datos = inputLine;
+                                writer_gps.write(instance_gps, instance_handle_gps);
+                                System.out.println(instance_gps.datos);
+
 			}
 			else System.out.println("ERROR: Linea con formato erroneo");
 		
