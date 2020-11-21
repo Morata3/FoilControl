@@ -146,9 +146,13 @@ int setUp_pid(int domainId, int sample_count)
 void publisher_pid(float pitch, float roll, float height){
 
         printf("Writing pid, count %d\n", count);
+	
+	instance->pitch = pitch;
+	instance->roll = roll;
+	instance->height = height;
+	
 
-        /* Modify the data to be written here */
-
+	printf("Roll: %f Pitch: %f  Height: %f\n", instance->roll, instance->pitch, instance->height);
         /* Write data */
         retcode = pidDataWriter_write(
             pid_writer, instance, &instance_handle);

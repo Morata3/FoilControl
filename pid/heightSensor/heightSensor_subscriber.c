@@ -83,7 +83,7 @@ void heightSensorListener_on_data_available(
 	    char height[5];
 	    int index = 0;
 	    while(token !=NULL){  
-		if(index==2) strcpy(height,token);
+		if(index==1) strcpy(height,token);
 		token = strtok(NULL, " ");
 		index ++;
 	    }
@@ -197,7 +197,7 @@ int subscriber_main(int domainId, int sample_count)
 
 
     /*Set up PID publisher*/
-    setUp_pid(domainPid,0);
+    setUp_pid(domainPid,1);
 
     /* Set up a data reader listener */
     reader_listener.on_requested_deadline_missed  =

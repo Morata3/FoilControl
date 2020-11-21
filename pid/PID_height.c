@@ -28,7 +28,5 @@ float pid_height(float entrada){
     inicio=1;
     sleep(dt);
 
-
-
-    return 0;
+    return salida;
 }

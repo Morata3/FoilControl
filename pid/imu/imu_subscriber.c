@@ -207,7 +207,8 @@ int subscriber_main(int domainId, int sample_count)
     }
    
     /*Set up PID publisher*/
-    setUp_pid (domainPid,0);
+    setUp_pid (domainPid,1); //O SEGUNDO ARGUMENTO INDICA O NÚMERO DE MENSAXES QUE PUBLICA
+    				// PARA QUE PUBLIQUE EN BLUQUE POÑER UN 0
 
 
     /* Set up a data reader listener */
@@ -247,7 +248,6 @@ int subscriber_main(int domainId, int sample_count)
 
     /* Cleanup and delete all entities */
     pid_shutdown();
-
     return subscriber_shutdown(participant);
 }
 
