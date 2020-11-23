@@ -14,7 +14,7 @@ float pid_height(float entrada){
 
     srand(time(NULL));
 
-    printf("\nÁngulo medido por el sensor => %f\n",entrada);
+//    printf("\nÁngulo medido por el sensor => %f\n",entrada);
 
     error = (setpoint - entrada);
     if(inicio!=0){
@@ -24,7 +24,7 @@ float pid_height(float entrada){
     salida = kp*error + ki*integralError + kd*derivadaError;
     lastError = error;
 
-    printf("\nSalida controlador PID... => %f\n",salida);
+//    printf("\nSalida controlador PID... => %f\n",salida);
     inicio=1;
     sleep(dt);
 

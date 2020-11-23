@@ -13,7 +13,6 @@ pid *instance = NULL;
 DDS_ReturnCode_t retcode;
 DDS_InstanceHandle_t instance_handle; 
 const char *type_name = NULL;
-int count = 0;  
 struct DDS_Duration_t send_period = {4,0};
 
 /* Delete all entities */
@@ -98,7 +97,7 @@ int setUp_pid(int domainId, int sample_count)
     /* To customize topic QoS, use 
     the configuration file USER_QOS_PROFILES.xml */
     topic = DDS_DomainParticipant_create_topic(
-        participant, "Example pid",
+        participant, "pid",
         type_name, &DDS_TOPIC_QOS_DEFAULT, NULL /* listener */,
         DDS_STATUS_MASK_NONE);
     if (topic == NULL) {
@@ -144,15 +143,13 @@ int setUp_pid(int domainId, int sample_count)
    // for (count=0; (sample_count == 0) || (count < sample_count); ++count) {
 
 void publisher_pid(float pitch, float roll, float height){
-
-        printf("Writing pid, count %d\n", count);
 	
 	instance->pitch = pitch;
 	instance->roll = roll;
 	instance->height = height;
 	
 
-	printf("Roll: %f Pitch: %f  Height: %f\n", instance->roll, instance->pitch, instance->height);
+//	printf("Roll: %f Pitch: %f  Height: %f\n", instance->roll, instance->pitch, instance->height);
         /* Write data */
         retcode = pidDataWriter_write(
             pid_writer, instance, &instance_handle);

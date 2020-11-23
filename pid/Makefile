@@ -8,6 +8,9 @@ IMU_DIR =./imu/
 HEIGHT_DIR =./heightSensor/
 PID_DIR =./pid/
 
+DEBUG_DIR =../debugger/
+DEBUG_OBJS =../debugger/objs/armv6vfphLinux3.xgcc4.7.2/
+
 TARGET_ARCH = armv6vfphLinux3.xgcc4.7.2
 TARGET_IMU = imu
 TARGET_HEIGHT = height
@@ -62,10 +65,12 @@ CDRSOURCES_PID = pid.idl
 SOURCES_IMU = $(IMU_DIR)imuPlugin.c $(IMU_DIR)imu.c $(IMU_DIR)imuSupport.c $(SOURCE_DIR)PID_roll.c $(SOURCE_DIR)PID_pitch.c
 SOURCES_HEIGHT = $(HEIGHT_DIR)heightSensorPlugin.c $(HEIGHT_DIR)heightSensor.c $(HEIGHT_DIR)heightSensorSupport.c $(SOURCE_DIR)PID_height.c 
 SOURCES_PID = $(PID_DIR)pidPlugin.c $(PID_DIR)pid.c $(PID_DIR)pidSupport.c $(PID_DIR)pid_publisher.c 
+SOURCES_DEBUG = $(DEBUG_DIR)debugPlugin.c $(DEBUG_DIR)debug.c $(DEBUG_DIR)debugSupport.c $(DEBUG_DIR)debug_publisher.c 
 
 COMMONSOURCES_IMU = $(notdir $(SOURCES_IMU))
 COMMONSOURCES_HEIGHT = $(notdir $(SOURCES_HEIGHT))
 COMMONSOURCES_PID = $(notdir $(SOURCES_PID))
+COMMONSOURCES_DEBUG = $(notdir $(SOURCES_DEBUG))
 
 EXEC_IMU       = imu_subscriber imu_publisher
 EXEC_HEIGHT    = heightSensor_subscriber heightSensor_publisher
@@ -77,6 +82,7 @@ DIRECTORIES_PID = objs.dir objs/$(TARGET_ARCH).dir objs/$(TARGET_ARCH)/$(TARGET_
 COMMONOBJS_IMU    = $(COMMONSOURCES_IMU:%.c=objs/$(TARGET_ARCH)/$(TARGET_IMU)/%.o)
 COMMONOBJS_HEIGHT = $(COMMONSOURCES_HEIGHT:%.c=objs/$(TARGET_ARCH)/$(TARGET_HEIGHT)/%.o)
 COMMONOBJS_PID    = $(COMMONSOURCES_PID:%.c=objs/$(TARGET_ARCH)/$(TARGET_PID)/%.o)
+COMMONOBJS_DEBUG    = $(COMMONSOURCES_DEBUG:%.c=$(DEBUG_OBJS)%.o)
 
 # We actually stick the objects in a sub directory to keep your directory clean.
 $(TARGET_ARCH) : $(DIRECTORIES_IMU) $(COMMONOBJS_IMU) $(DIRECTORIES_HEIGHT) $(COMMONOBJS_HEIGHT) $(DIRECTORIES_PID) $(COMMONOBJS_PID) \
@@ -87,8 +93,8 @@ $(TARGET_ARCH) : $(DIRECTORIES_IMU) $(COMMONOBJS_IMU) $(DIRECTORIES_HEIGHT) $(CO
 
 
 #### REGLAS IMU
-objs/$(TARGET_ARCH)/$(TARGET_IMU)/% : objs/$(TARGET_ARCH)/$(TARGET_IMU)/%.o objs/$(TARGET_ARCH)/$(TARGET_IMU)/PID_pitch.o objs/$(TARGET_ARCH)/$(TARGET_IMU)/PID_roll.o objs/$(TARGET_ARCH)/$(TARGET_PID)/pid_publisher.o
-	$(LINKER) $(LINKER_FLAGS)   -o $@ $@.o $(COMMONOBJS_IMU) $(COMMONOBJS_PID) $(LIBS)
+objs/$(TARGET_ARCH)/$(TARGET_IMU)/% : objs/$(TARGET_ARCH)/$(TARGET_IMU)/%.o objs/$(TARGET_ARCH)/$(TARGET_IMU)/PID_pitch.o objs/$(TARGET_ARCH)/$(TARGET_IMU)/PID_roll.o objs/$(TARGET_ARCH)/$(TARGET_PID)/pid_publisher.o $(DEBUG_OBJS)debug_publisher.o
+	$(LINKER) $(LINKER_FLAGS)   -o $@ $@.o $(COMMONOBJS_IMU) $(COMMONOBJS_PID) $(COMMONOBJS_DEBUG) $(LIBS)
 
 objs/$(TARGET_ARCH)/$(TARGET_IMU)/%.o : $(IMU_DIR)%.c $(IMU_DIR)imu.h 
 	$(COMPILER) $(COMPILER_FLAGS)  -o $@ $(DEFINES) $(INCLUDES) -c $<
@@ -97,8 +103,8 @@ objs/$(TARGET_ARCH)/$(TARGET_IMU)/PID%.o : $(SOURCE_DIR)PID%.c $(SOURCE_DIR)PID.
 	$(COMPILER) -o $@ $(DEFINES) -c $<
 
 #### REGLAS HEIGHT
-objs/$(TARGET_ARCH)/$(TARGET_HEIGHT)/% : objs/$(TARGET_ARCH)/$(TARGET_HEIGHT)/%.o objs/$(TARGET_ARCH)/$(TARGET_HEIGHT)/PID_height.o
-	$(LINKER) $(LINKER_FLAGS)   -o $@ $@.o $(COMMONOBJS_HEIGHT) $(COMMONOBJS_PID) $(LIBS)
+objs/$(TARGET_ARCH)/$(TARGET_HEIGHT)/% : objs/$(TARGET_ARCH)/$(TARGET_HEIGHT)/%.o objs/$(TARGET_ARCH)/$(TARGET_HEIGHT)/PID_height.o $(DEBUG_OBJS)debug_publisher.o
+	$(LINKER) $(LINKER_FLAGS)   -o $@ $@.o $(COMMONOBJS_HEIGHT) $(COMMONOBJS_PID)  $(COMMONOBJS_DEBUG) $(LIBS)
 
 objs/$(TARGET_ARCH)/$(TARGET_HEIGHT)/%.o : $(HEIGHT_DIR)%.c $(HEIGHT_DIR)heightSensor.h 
 	$(COMPILER) $(COMPILER_FLAGS)  -o $@ $(DEFINES) $(INCLUDES) -c $<

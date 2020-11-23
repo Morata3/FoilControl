@@ -5,6 +5,7 @@
 #include "imuSupport.h"
 #include "PID.h"
 #include "pid/pid_publisher.h"
+#include "../debugger/debug_publisher.h"
 
 
 void imuListener_on_requested_deadline_missed(
@@ -81,7 +82,7 @@ void imuListener_on_data_available(
 
     for (i = 0; i < imuSeq_get_length(&data_seq); ++i) {
         if (DDS_SampleInfoSeq_get_reference(&info_seq, i)->valid_data) {
-            printf("Received data\n");
+           // printf("Received data\n");
 
 	    char * string = imuSeq_get_reference(&data_seq,i)->datos;
 	    char * token = strtok(string, " ");
@@ -94,7 +95,7 @@ void imuListener_on_data_available(
 		token = strtok(NULL, " ");
 		index ++;
 	    }
-	   printf("Pitch: %s Roll:%s\n",pitch,roll); 
+	  // printf("Pitch: %s Roll:%s\n",pitch,roll); 
 	   float correct_pitch;
 	   float correct_roll;
 	   correct_pitch=pid_roll(atof(roll)); 
@@ -102,6 +103,7 @@ void imuListener_on_data_available(
 
 	   // Publicamos os datos do pitch e o roll correxidos
 	   publisher_pid(correct_pitch,correct_roll,0.00);
+	   publisher_debugger(correct_pitch,correct_roll,0.00);
         }
     }
 
@@ -158,7 +160,7 @@ int subscriber_main(int domainId, int sample_count)
     DDS_Topic *topic = NULL;
     struct DDS_DataReaderListener reader_listener =
     DDS_DataReaderListener_INITIALIZER;
-    DDS_DataReader *reader = NULL;
+    DDS_DataReader *reader = NULL; 
     DDS_ReturnCode_t retcode;
     const char *type_name = NULL;
     int count = 0;
@@ -200,6 +202,7 @@ int subscriber_main(int domainId, int sample_count)
         participant, "imu",
         type_name, &DDS_TOPIC_QOS_DEFAULT, NULL /* listener */,
         DDS_STATUS_MASK_NONE);
+
     if (topic == NULL) {
         fprintf(stderr, "create_topic error\n");
         subscriber_shutdown(participant);
@@ -209,6 +212,7 @@ int subscriber_main(int domainId, int sample_count)
     /*Set up PID publisher*/
     setUp_pid (domainPid,1); //O SEGUNDO ARGUMENTO INDICA O NÚMERO DE MENSAXES QUE PUBLICA
     				// PARA QUE PUBLIQUE EN BLUQUE POÑER UN 0
+    setUp_debug(4,1);
 
 
     /* Set up a data reader listener */
@@ -232,6 +236,7 @@ int subscriber_main(int domainId, int sample_count)
     reader = DDS_Subscriber_create_datareader(
         subscriber, DDS_Topic_as_topicdescription(topic),
         &DDS_DATAREADER_QOS_DEFAULT, &reader_listener, DDS_STATUS_MASK_ALL);
+
     if (reader == NULL) {
         fprintf(stderr, "create_datareader error\n");
         subscriber_shutdown(participant);
@@ -240,14 +245,14 @@ int subscriber_main(int domainId, int sample_count)
 
     /* Main loop */
     for (count=0; (sample_count == 0) || (count < sample_count); ++count) {
-        printf("imu subscriber sleeping for %d sec...\n",
-        poll_period.sec);
+//        printf("imu subscriber sleeping for %d sec...\n",poll_period.sec);
 	
         NDDS_Utility_sleep(&poll_period);
     }
 
     /* Cleanup and delete all entities */
     pid_shutdown();
+    debug_shutdown();
     return subscriber_shutdown(participant);
 }
 

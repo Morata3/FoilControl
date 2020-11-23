@@ -1,8 +1,9 @@
 SOURCE_DIR = 
-HEIGHT_DIR =./heightSensor
-IMU_DIR =./imu
-GPS_DIR =./gps
-PID_DIR =./pid
+HEIGHT_DIR =./heightSensor/
+IMU_DIR =./imu/
+GPS_DIR =./gps/
+PID_DIR =./pid/
+DEBUG_DIR = ./debug/
 
 TARGET_ARCH=armv6vfphLinux3.xgcc4.7.2
 
@@ -15,34 +16,26 @@ JAVA_PATH = java
 JAVAC_PATH = javac
 
 JAVA_SOURCES = $(SOURCE_DIR)./communicator.java \
-	       $(SOURCE_DIR)$(HEIGHT_DIR)/heightSensoir.java $(SOURCE_DIR)$(HEIGHT_DIR)/heightSensorSeq.java $(SOURCE_DIR)$(HEIGHT_DIR)/heightSensorTypeSupport.java $(SOURCE_DIR)$(HEIGHT_DIR)/heightSensorTypeCode.java $(SOURCE_DIR)$(HEIGHT_DIR)/heightSensorDataReader.java $(SOURCE_DIR)$(HEIGHT_DIR)/heightSensorDataWriter.java $(SOURCE_DIR)$(HEIGHT_DIR)/heightSensorSubscriber.java \
-		       $(SOURCE_DIR)$(IMU_DIR)/imu.java $(SOURCE_DIR)$(IMU_DIR)/imuSeq.java $(SOURCE_DIR)$(IMU_DIR)/imuTypeSupport.java $(SOURCE_DIR)$(IMU_DIR)/imuTypeCode.java $(SOURCE_DIR)$(IMU_DIR)/imuDataReader.java $(SOURCE_DIR)$(IMU_DIR)/imuDataWriter.java $(SOURCE_DIR)$(IMU_DIR)/imuSubscriber.java $(SOURCE_DIR)$(IMU_DIR)/imuPublisher.java \
-	       $(SOURCE_DIR)$(IMU_DIR)/imu.java $(SOURCE_DIR)$(IMU_DIR)/imuSeq.java $(SOURCE_DIR)$(IMU_DIR)/imuTypeSupport.java $(SOURCE_DIR)$(IMU_DIR)/imuTypeCode.java $(SOURCE_DIR)$(IMU_DIR)/imuDataReader.java $(SOURCE_DIR)$(IMU_DIR)/imuDataWriter.java $(SOURCE_DIR)$(IMU_DIR)/imuSubscriber.java $(SOURCE_DIR)$(IMU_DIR)/imuPublisher.java \
-		$(SOURCE_DIR)$(PID_DIR)/pid.java $(SOURCE_DIR)$(PID_DIR)/pidSeq.java $(SOURCE_DIR)$(PID_DIR)/pidTypeSupport.java $(SOURCE_DIR)$(PID_DIR)/pidTypeCode.java $(SOURCE_DIR)$(PID_DIR)/pidDataReader.java $(SOURCE_DIR)$(PID_DIR)/pidDataWriter.java $(SOURCE_DIR)$(PID_DIR)/pidSubscriber.java $(SOURCE_DIR)$(PID_DIR)/pidPublisher.java
+	       $(SOURCE_DIR)$(HEIGHT_DIR)heightSensor.java $(SOURCE_DIR)$(HEIGHT_DIR)heightSensorSeq.java $(SOURCE_DIR)$(HEIGHT_DIR)heightSensorTypeSupport.java $(SOURCE_DIR)$(HEIGHT_DIR)heightSensorTypeCode.java $(SOURCE_DIR)$(HEIGHT_DIR)heightSensorDataReader.java $(SOURCE_DIR)$(HEIGHT_DIR)heightSensorDataWriter.java \
+		       $(SOURCE_DIR)$(IMU_DIR)imu.java $(SOURCE_DIR)$(IMU_DIR)imuSeq.java $(SOURCE_DIR)$(IMU_DIR)imuTypeSupport.java $(SOURCE_DIR)$(IMU_DIR)imuTypeCode.java $(SOURCE_DIR)$(IMU_DIR)imuDataReader.java $(SOURCE_DIR)$(IMU_DIR)imuDataWriter.java \
+		       $(SOURCE_DIR)$(GPS_DIR)gps.java $(SOURCE_DIR)$(GPS_DIR)gpsSeq.java $(SOURCE_DIR)$(GPS_DIR)gpsTypeSupport.java $(SOURCE_DIR)$(GPS_DIR)gpsTypeCode.java $(SOURCE_DIR)$(GPS_DIR)gpsDataReader.java $(SOURCE_DIR)$(GPS_DIR)gpsDataWriter.java \
+		       $(SOURCE_DIR)$(PID_DIR)pid.java $(SOURCE_DIR)$(PID_DIR)pidSeq.java $(SOURCE_DIR)$(PID_DIR)pidTypeSupport.java $(SOURCE_DIR)$(PID_DIR)pidTypeCode.java $(SOURCE_DIR)$(PID_DIR)pidDataReader.java $(SOURCE_DIR)$(PID_DIR)pidDataWriter.java $(SOURCE_DIR)$(PID_DIR)pidSubscriber.java $(SOURCE_DIR)$(PID_DIR)pidPublisher.java \
+		       $(SOURCE_DIR)$(DEBUG_DIR)debug.java $(SOURCE_DIR)$(DEBUG_DIR)debugSeq.java $(SOURCE_DIR)$(DEBUG_DIR)debugTypeSupport.java $(SOURCE_DIR)$(DEBUG_DIR)debugTypeCode.java $(SOURCE_DIR)$(DEBUG_DIR)debugDataReader.java $(SOURCE_DIR)$(DEBUG_DIR)debugDataWriter.java $(SOURCE_DIR)$(DEBUG_DIR)debugSubscriber.java $(SOURCE_DIR)$(DEBUG_DIR)debugPublisher.java 
+
 
 CLASS_FILES  = $(JAVA_SOURCES:%.java=%.class)
 
 RTI_CLASSPATH := $(NDDSHOME)/lib/java/nddsjava.jar
 
-#%.class : %.java
-#	$(JAVAC_PATH)  -classpath ".:$(RTI_CLASSPATH):/usr/share/java/RXTXcomm.jar" $<
-
-pid%.class : %.java
-	$(JAVAC_PATH) -d $(PID_DIR) -classpath ".:$(RTI_CLASSPATH):$(PID_DIR):/usr/share/java/RXTXcomm.jar" $<
-
-height%.class : %.java
-	$(JAVAC_PATH) -d $(HEIGHT_DIR) -classpath ".:$(RTI_CLASSPATH):$(HEIGHT_DIR):/usr/share/java/RXTXcomm.jar" $<
-
-imu%.class : %.java
-	$(JAVAC_PATH) -d $(IMU_DIR) -classpath ".:$(RTI_CLASSPATH):$(IMU_DIR):/usr/share/java/RXTXcomm.jar" $<
-gps%.class : %.java
-	$(JAVAC_PATH) -d $(GPS_DIR) -classpath ".:$(RTI_CLASSPATH):$(GPS_DIR):/usr/share/java/RXTXcomm.jar" $<
-
-communicator.class : communicator.java
-	$(JAVAC_PATH) -classpath ".:$(RTI_CLASSPATH):$(HEIGHT_DIR):$(IMU_DIR):$(GPS_DIR):$(PID_DIR):/usr/share/java/RXTXcomm.jar" $<
+%.class : %.java
+	$(JAVAC_PATH) -classpath ".:$(RTI_CLASSPATH):$(HEIGHT_DIR):$(IMU_DIR):$(GPS_DIR):$(PID_DIR):$(DEBUG_DIR):/usr/share/java/RXTXcomm.jar" $<
 
 all: $(CLASS_FILES)
- 
+
+# Clean classes to rebuild
+clean:
+	$(RM) $(CLASS_FILES)
+
 #
 # Convenient way to run the java programs
 #
@@ -50,7 +43,7 @@ all: $(CLASS_FILES)
 export LD_LIBRARY_PATH := $(NDDSHOME)/lib/armv6vfphLinux3.xgcc4.7.2:/usr/lib/lwp:$(LD_LIBRARY_PATH)
 
 communicator: ./communicator.class
-	$(JAVA_PATH)  -classpath ".:$(RTI_CLASSPATH):$(HEIGHT_DIR):$(IMU_DIR):$(GPS_DIR):$(PID_DIR):/usr/share/java/RXTXcomm.jar" communicator $(ARGS)
+	$(JAVA_PATH)  -classpath ".:$(RTI_CLASSPATH):$(HEIGHT_DIR):$(IMU_DIR):$(GPS_DIR):$(PID_DIR):$(DEBUG_DIR):/usr/share/java/RXTXcomm.jar" communicator $(ARGS)
  
 heightSensorSubscriber: ./heightSensorSubscriber.class
 	$(JAVA_PATH)  -classpath ".:$(RTI_CLASSPATH)" heightSensorSubscriber $(ARGS)

@@ -3,11 +3,9 @@ ifndef NDDSHOME
 NDDSHOME := "/home/pi/rti_connext_dds-6.0.1"
 endif
 
-SOURCE_DIR =
-HEIGHT_DIR =../pid/heightSensor/
+SOURCE_DIR = 
 
 TARGET_ARCH = armv6vfphLinux3.xgcc4.7.2
-TARGET_HEIGHT = height
 
 ifndef COMPILER
 COMPILER = arm-linux-gnueabihf-gcc
@@ -51,25 +49,40 @@ LIBS = -L$(NDDSHOME)/lib/$(TARGET_ARCH) \
         -lnddsc$(SHAREDLIB_SFX)$(DEBUG_SFX) -lnddscore$(SHAREDLIB_SFX)$(DEBUG_SFX) \
         $(SYSLIBS)
 
-SOURCES_HEIGHT = $(HEIGHT_DIR)heightSensorPlugin.c $(HEIGHT_DIR)heightSensor.c $(HEIGHT_DIR)heightSensorSupport.c $(SOURCE_DIR)PID_height.c 
+CDRSOURCES    = debug.idl
+SOURCES = $(SOURCE_DIR)debugPlugin.c $(SOURCE_DIR)debug.c $(SOURCE_DIR)debugSupport.c $(SOURCE_DIR)debug_publisher.c
+COMMONSOURCES = $(notdir $(SOURCES))
 
-COMMONSOURCES_HEIGHT = $(notdir $(SOURCES_HEIGHT))
-
-EXEC_HEIGHT       = heightSensor_subscriber heightSensor_publisher
-
-DIRECTORIES_HEIGHT = objs.dir objs/$(TARGET_ARCH).dir objs/$(TARGET_ARCH)/$(TARGET_HEIGHT).dir
-
-COMMONOBJS_HEIGHT    = $(COMMONSOURCES_HEIGHT:%.c=objs/$(TARGET_ARCH)/$(TARGET_HEIGHT)/%.o)
+EXEC          = debug_subscriber 
+DIRECTORIES   = objs.dir objs/$(TARGET_ARCH).dir
+COMMONOBJS    = $(COMMONSOURCES:%.c=objs/$(TARGET_ARCH)/%.o)
 
 # We actually stick the objects in a sub directory to keep your directory clean.
-$(TARGET_ARCH) : $(DIRECTORIES_HEIGHT) $(COMMONOBJS_HEIGHT)\
-	$(EXEC_HEIGHT:%=objs/$(TARGET_ARCH)/$(TARGET_HEIGHT)/%.o) \
-	$(EXEC_HEIGHT:%=objs/$(TARGET_ARCH)/$(TARGET_HEIGHT)/%)
+$(TARGET_ARCH) : $(DIRECTORIES) $(COMMONOBJS) \
+	$(EXEC:%=objs/$(TARGET_ARCH)/%.o) \
+	$(EXEC:%=objs/$(TARGET_ARCH)/%)
 
-objs/$(TARGET_ARCH)/$(TARGET_HEIGHT)/% : objs/$(TARGET_ARCH)/$(TARGET_HEIGHT)/%.o
-	$(LINKER) $(LINKER_FLAGS)   -o $@ $@.o $(COMMONOBJS_HEIGHT) $(LIBS)
+objs/$(TARGET_ARCH)/% : objs/$(TARGET_ARCH)/%.o
+	$(LINKER) $(LINKER_FLAGS)   -o $@ $@.o $(COMMONOBJS) $(LIBS)
 
-objs/$(TARGET_ARCH)/$(TARGET_HEIGHT)/%.o : $(HEIGHT_DIR)%.c   $(HEIGHT_DIR)heightSensor.h 
+objs/$(TARGET_ARCH)/%.o : $(SOURCE_DIR)%.c   $(SOURCE_DIR)debug.h 
 	$(COMPILER) $(COMPILER_FLAGS)  -o $@ $(DEFINES) $(INCLUDES) -c $<
 
+#
+# Uncomment these lines if you want the support files regenerated when idl
+# file is modified
+#
+#
+#  $(SOURCE_DIR)debugPlugin.c $(SOURCE_DIR)debug.c $(SOURCE_DIR)debugSupport.c \
+#  $(SOURCE_DIR)debug.h $(SOURCE_DIR)debugPlugin.h $(SOURCE_DIR)debugSupport.h : \
+#		$(SOURCE_DIR)debug.idl
+#	$(NDDSHOME)/bin/rtiddsgen $(SOURCE_DIR)debug.idl -replace -language C
+#
+# Here is how we create those subdirectories automatically.
+%.dir : 
+	@echo "Checking directory $*"
+	@if [ ! -d $* ]; then \
+		echo "Making directory $*"; \
+		mkdir -p $* ; \
+	fi;
 

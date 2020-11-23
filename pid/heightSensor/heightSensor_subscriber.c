@@ -5,6 +5,7 @@
 #include "heightSensorSupport.h"
 #include "PID.h"
 #include "pid/pid_publisher.h"
+#include "../debugger/debug_publisher.h"
 
 void heightSensorListener_on_requested_deadline_missed(
     void* listener_data,
@@ -77,7 +78,6 @@ void heightSensorListener_on_data_available(
 
     for (i = 0; i < heightSensorSeq_get_length(&data_seq); ++i) {
         if (DDS_SampleInfoSeq_get_reference(&info_seq, i)->valid_data) {
-            printf("Received data\n");
             char * string = heightSensorSeq_get_reference(&data_seq,i)->msg;
 	    char * token = strtok(string, " ");
 	    char height[5];
@@ -87,10 +87,11 @@ void heightSensorListener_on_data_available(
 		token = strtok(NULL, " ");
 		index ++;
 	    }
-	   printf("Height: %s\n",height); 
+	 //  printf("Height: %s\n",height); 
 	   float correct_height;
 	   correct_height=pid_height(atof(height)); 
-	   publisher_pid(0,0,correct_height);
+	   publisher_pid(0,0,correct_height); 
+	   publisher_debugger(0,0,correct_height);
 	}
     }
 
@@ -198,6 +199,7 @@ int subscriber_main(int domainId, int sample_count)
 
     /*Set up PID publisher*/
     setUp_pid(domainPid,1);
+    setUp_debug(4,1);
 
     /* Set up a data reader listener */
     reader_listener.on_requested_deadline_missed  =
@@ -228,8 +230,7 @@ int subscriber_main(int domainId, int sample_count)
 
     /* Main loop */
     for (count=0; (sample_count == 0) || (count < sample_count); ++count) {
-        printf("heightSensor subscriber sleeping for %d sec...\n",
-        poll_period.sec);
+//        printf("heightSensor subscriber sleeping for %d sec...\n", poll_period.sec);
 
         NDDS_Utility_sleep(&poll_period);
     }
@@ -237,6 +238,7 @@ int subscriber_main(int domainId, int sample_count)
 
     /* Cleanup and delete all entities */ 
     pid_shutdown();
+    debug_shutdown();
     return subscriber_shutdown(participant);
 }
 

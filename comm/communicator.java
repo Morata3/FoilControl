@@ -34,6 +34,7 @@ public class communicator {
 	private static final int domain_imu = 1;
 	private static final int domain_gps = 2;
 	private static final int domain_pid = 3;
+	private static final int domain_debug = 4;
 	///////////////////////////////
 	
 	private static String msg = new String();
@@ -60,17 +61,12 @@ public class communicator {
             sampleCount = Integer.valueOf(args[1]).intValue();
         }
 	
-        /* Uncomment this to turn on additional logging
-            Logger.get_instance().set_verbosity_by_category(
-            LogCategory.NDDS_CONFIG_LOG_CATEGORY_API,
-            LogVerbosity.NDDS_CONFIG_LOG_VERBOSITY_STATUS_ALL);
-        */
-
         // --- Run --- //
 	inicializarConexion();
         publisherMain(domainId, sampleCount);
 
     }
+
 
 
 
@@ -167,6 +163,11 @@ public class communicator {
         Publisher publisher_gps = null;
         Topic topic_gps = null;
         gpsDataWriter writer_gps = null;
+
+	DomainParticipant participant_debug = null;
+        Publisher publisher_debug = null;
+        Topic topic_debug = null;
+        debugDataWriter writer_debug = null;
 
 	//Subscriber PID
 	DomainParticipant participant = null;
@@ -329,16 +330,70 @@ public class communicator {
             // --- Write --- //
             gps instance_gps = new gps();
             InstanceHandle_t instance_handle_gps = InstanceHandle_t.HANDLE_NIL;
+				
+	    			// *** DEBUGGER *** //
+				// ---------------- //
+	
+		// --- Create participant --- //
+            participant_debug = DomainParticipantFactory.TheParticipantFactory.
+            create_participant(
+                domain_debug, DomainParticipantFactory.PARTICIPANT_QOS_DEFAULT,
+                null /* listener */, StatusKind.STATUS_MASK_NONE);
+            if (participant_debug == null) {
+                System.err.println("create_participant error\n");
+                return;
+            }        
+
+            // --- Create publisher --- //
+
+            publisher_debug = participant_debug.create_publisher(
+                DomainParticipant.PUBLISHER_QOS_DEFAULT, null /* listener */,
+                StatusKind.STATUS_MASK_NONE);
+            if (publisher_debug == null) {
+                System.err.println("create_publisher error\n");
+                return;
+            }                   
+
+            // --- Create topic --- //
+
+            /* Register type before creating topic */
+            String typeName_debug = debugTypeSupport.get_type_name();
+            debugTypeSupport.register_type(participant_debug, typeName_debug);
+
+            topic_debug = participant_debug.create_topic(
+                "debug",
+                typeName_debug, DomainParticipant.TOPIC_QOS_DEFAULT,
+                null /* listener */, StatusKind.STATUS_MASK_NONE);
+            if (topic_debug == null) {
+                System.err.println("create_topic error\n");
+                return;
+            }           
+
+            // --- Create writer --- //
+
+            writer_debug = (debugDataWriter)
+            publisher_debug.create_datawriter(
+                topic_debug, Publisher.DATAWRITER_QOS_DEFAULT,
+                null /* listener */, StatusKind.STATUS_MASK_NONE);
+            if (writer_debug == null) {
+                System.err.println("create_datawriter error\n");
+                return;
+            }           
+
+            // --- Write --- //
+
+            debug instance_debug = new debug();
+            InstanceHandle_t instance_handle_debug = InstanceHandle_t.HANDLE_NIL;
 
 
-				// *** PID *** //
-				//------------//
+				// *** PID Subscriber *** //
+				//-----------------------//
 		
 	    // --- Create participant --- //
 
             participant = DomainParticipantFactory.TheParticipantFactory.
             create_participant(
-                domainId, DomainParticipantFactory.PARTICIPANT_QOS_DEFAULT,
+                domain_pid, DomainParticipantFactory.PARTICIPANT_QOS_DEFAULT,
                 null /* listener */, StatusKind.STATUS_MASK_NONE);
             if (participant == null) {
                 System.err.println("create_participant error PID\n");
@@ -361,7 +416,7 @@ public class communicator {
             pidTypeSupport.register_type(participant, typeName); 
             
             topic = participant.create_topic(
-                "Example pid",
+                "pid",
                 typeName, DomainParticipant.TOPIC_QOS_DEFAULT,
                 null /* listener */, StatusKind.STATUS_MASK_NONE);
             if (topic == null) {
@@ -385,11 +440,15 @@ public class communicator {
 
 	    /////////// PUBLICAR ////////
 	    ////////////////////////////
+	    //
+	    //Publicamos 4 datos -> sampleCount = 4;
 
             final long sendPeriodMillis = 400; // 400 mili-seconds
             String height;
 	    String imu;
 
+	    //sampleCount = 4;	    
+	    //while(true){
 	    for (int count = 0;
             (sampleCount == 0) || (count < sampleCount);
             ++count) {
@@ -399,18 +458,28 @@ public class communicator {
 			String inputLine = input.readLine();	
 			if(inputLine.startsWith("Height")){
 				instance_height.msg = inputLine;
+				instance_debug.height = Float.parseFloat(inputLine.split(":")[1]);
+
 				writer_height.write(instance_height, instance_handle_height);
+				writer_debug.write(instance_debug, instance_handle_debug);
+
 				System.out.println(instance_height.msg);
 			}
 			else if(inputLine.startsWith("IMU")){
 				instance_imu.name = "Roll&Pitch";
 				instance_imu.datos = inputLine;
+				instance_debug.pitch = Float.parseFloat(inputLine.split(" ")[2]);
+				instance_debug.roll = Float.parseFloat(inputLine.split(" ")[4]);
+
 				writer_imu.write(instance_imu, instance_handle_imu);
+				writer_debug.write(instance_debug, instance_handle_debug);
+
 				System.out.println(instance_imu.datos);
 			}
 			else if (inputLine.startsWith("Speed")){
 				instance_gps.name = "Speed";
                                 instance_gps.datos = inputLine;
+				instance_debug.speed = Float.parseFloat(inputLine.split("=")[1]);
                                 writer_gps.write(instance_gps, instance_handle_gps);
                                 System.out.println(instance_gps.datos);
 
@@ -428,6 +497,26 @@ public class communicator {
                     break;
                 }
             }
+
+            // --- Wait for data --- //
+
+         /*   final long receivePeriodSec = 4;
+
+            for (int count = 0;
+            (sampleCount == 0) || (count < sampleCount);
+            ++count) {
+                System.out.println("pid subscriber sleeping for "
+                + receivePeriodSec + " sec...");
+
+                try {
+                    Thread.sleep(receivePeriodSec * 1000);  // in millisec
+                } catch (InterruptedException ix) {
+                    System.err.println("INTERRUPTED");
+                    break;
+                }
+            }*/
+	    //}
+
 
            //writer.unregister_instance(instance, instance_handle);
 
