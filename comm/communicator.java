@@ -36,8 +36,9 @@ public class communicator {
 	private static final int domain_pid = 3;
 	private static final int domain_debug = 4;
 	///////////////////////////////
-	
-	private static String msg = new String();
+
+	private static String prefijo, speed, longitud, latitud, pitch, roll, altura;
+
 	private static OutputStream output = null;
 	private static BufferedReader input;
 
@@ -66,9 +67,6 @@ public class communicator {
         publisherMain(domainId, sampleCount);
 
     }
-
-
-
 
     // -----------------------------------------------------------------------
     // Private Methods
@@ -115,6 +113,9 @@ public class communicator {
 
         pidSeq _dataSeq = new pidSeq();
         SampleInfoSeq _infoSeq = new SampleInfoSeq();
+	static int indexPitch = 1;
+	static int indexRoll = 2;
+	static int indexHeight = 3;
 
         public void on_data_available(DataReader reader) {
             pidDataReader pidReader =
@@ -132,11 +133,21 @@ public class communicator {
                     SampleInfo info = (SampleInfo)_infoSeq.get(i);
 
                     if (info.valid_data) {
-                        System.out.println(
-                            ((pid)_dataSeq.get(i)).toString("Received",0));
-
-                    }
-                }
+			    String salida_pid = ((pid)_dataSeq.get(i)).toString();
+			    String datos[] = salida_pid.split("\n");
+//			    System.out.println("Received:"+datos[indexPitch]+"#"+datos[indexRoll]+"#"+datos[indexHeight]);
+			    String outputLine=new String("01"+datos[indexPitch].split(":")[1]
+					    +"#02"+datos[indexRoll].split(":")[1]
+					    +"#03"+datos[indexHeight].split(":")[1]+"\n");
+		    	    
+			    System.out.println(outputLine);
+			    try{
+		    		    output.write(outputLine.getBytes());
+		    	    }catch (IOException e){
+		    		    e.printStackTrace();
+		    	    }
+		    }
+		}
             } catch (RETCODE_NO_DATA noData) {
                 // No data to process
             } finally {
@@ -145,8 +156,6 @@ public class communicator {
         }
     }
 
-
-	
     public static void publisherMain(int domainId, int sampleCount) {
        
         DomainParticipant participant_height = null;
@@ -440,12 +449,9 @@ public class communicator {
 
 	    /////////// PUBLICAR ////////
 	    ////////////////////////////
-	    //
-	    //Publicamos 4 datos -> sampleCount = 4;
 
             final long sendPeriodMillis = 400; // 400 mili-seconds
-            String height;
-	    String imu;
+	    String[] datosSensores = new String[10];    		    
 
 	    //sampleCount = 4;	    
 	    //while(true){
@@ -455,37 +461,44 @@ public class communicator {
 
                 /* Leyendo del ARDUINO y publicando */
 		try{    
-			String inputLine = input.readLine();	
-			if(inputLine.startsWith("Height")){
-				instance_height.msg = inputLine;
-				instance_debug.height = Float.parseFloat(inputLine.split(":")[1]);
+			String inputLine = input.readLine();
+	    		String[] componentes = inputLine.split("#");
+			prefijo = componentes[0]; 
+	    		if (prefijo.equals("000")) {
+		    		speed = componentes[1]; 
+				longitud = componentes[2];
+	    			latitud = componentes[3]; 
+		    		pitch = componentes[4]; 
+				roll = componentes[5]; 
+	    			altura = componentes[6]; 
+			}else System.out.println("********DATOS ARDUINO *********\n" + inputLine);
+				
+			instance_height.msg = altura;
+			instance_debug.height = Float.parseFloat(altura);
 
-				writer_height.write(instance_height, instance_handle_height);
-				writer_debug.write(instance_debug, instance_handle_debug);
+			writer_height.write(instance_height, instance_handle_height);
+			writer_debug.write(instance_debug, instance_handle_debug);
+			
+			System.out.println("****** DATOS RASPI********");
+			System.out.println("ALTURA: "+instance_height.msg);
+				
+			instance_imu.name = "Roll&Pitch";
+			instance_imu.datos = new String(pitch+" "+roll);
+			instance_debug.pitch = Float.parseFloat(pitch);
+			instance_debug.roll = Float.parseFloat(roll);
 
-				System.out.println(instance_height.msg);
-			}
-			else if(inputLine.startsWith("IMU")){
-				instance_imu.name = "Roll&Pitch";
-				instance_imu.datos = inputLine;
-				instance_debug.pitch = Float.parseFloat(inputLine.split(" ")[2]);
-				instance_debug.roll = Float.parseFloat(inputLine.split(" ")[4]);
+			writer_imu.write(instance_imu, instance_handle_imu);
+			writer_debug.write(instance_debug, instance_handle_debug);
 
-				writer_imu.write(instance_imu, instance_handle_imu);
-				writer_debug.write(instance_debug, instance_handle_debug);
+			System.out.println("IMU: "+instance_imu.datos);
 
-				System.out.println(instance_imu.datos);
-			}
-			else if (inputLine.startsWith("Speed")){
-				instance_gps.name = "Speed";
-                                instance_gps.datos = inputLine;
-				instance_debug.speed = Float.parseFloat(inputLine.split("=")[1]);
-                                writer_gps.write(instance_gps, instance_handle_gps);
-                                System.out.println(instance_gps.datos);
+			instance_gps.name = "Speed";
+                        instance_gps.datos = speed;
+			instance_debug.speed = Float.parseFloat(speed);
+			writer_gps.write(instance_gps, instance_handle_gps);
 
-			}
-			else System.out.println("ERROR: Linea con formato erroneo");
-		
+                        System.out.println("VELOCIDADE: "+instance_gps.datos);
+	
 		}catch (Exception e){
 			System.out.println(e);
 	    	}
@@ -497,28 +510,7 @@ public class communicator {
                     break;
                 }
             }
-
-            // --- Wait for data --- //
-
-         /*   final long receivePeriodSec = 4;
-
-            for (int count = 0;
-            (sampleCount == 0) || (count < sampleCount);
-            ++count) {
-                System.out.println("pid subscriber sleeping for "
-                + receivePeriodSec + " sec...");
-
-                try {
-                    Thread.sleep(receivePeriodSec * 1000);  // in millisec
-                } catch (InterruptedException ix) {
-                    System.err.println("INTERRUPTED");
-                    break;
-                }
-            }*/
-	    //}
-
-
-           //writer.unregister_instance(instance, instance_handle);
+	 
 
         } finally {
 
@@ -536,12 +528,7 @@ public class communicator {
                 DomainParticipantFactory.TheParticipantFactory.
                 delete_participant(participant_imu);
             }
-            /* RTI Data Distribution Service provides finalize_instance()
-            method for people who want to release memory used by the
-            participant factory singleton. Uncomment the following block of
-            code for clean destruction of the participant factory
-            singleton. */
-           //DomainParticipantFactory.finalize_instance();
+         
         }
     }
 }
