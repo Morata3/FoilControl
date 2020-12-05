@@ -83,9 +83,15 @@ void debugListener_on_data_available(
             float pitch = debugSeq_get_reference(&data_seq,i)->pitch;
             float speed = debugSeq_get_reference(&data_seq,i)->speed;
             float height = debugSeq_get_reference(&data_seq,i)->height;
+            float leftAngle = debugSeq_get_reference(&data_seq,i)->LeftAngle;
+            float rightAngle = debugSeq_get_reference(&data_seq,i)->RightAngle;
+            float backAngle = debugSeq_get_reference(&data_seq,i)->BackAngle;
 	    fprintf(log,"Pitch:%f Roll:%f \n", pitch, roll);
 	    fprintf(log,"Height:%f \n", height);
 	    fprintf(log,"Speed:%f \n", speed);
+	    fprintf(log,"Left Angle:%f \n", leftAngle);
+	    fprintf(log,"Rigth Angle:%f \n", rightAngle);
+	    fprintf(log,"Back Angle:%f \n", backAngle);
 	    fprintf(log,"**********************\n");
            
         }

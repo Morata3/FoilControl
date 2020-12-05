@@ -9,8 +9,8 @@ For more information, type 'rtiddsgen -help' at a command shell
 or consult the RTI Connext manual.
 */
 
-#ifndef debug_199379892_h
-#define debug_199379892_h
+#ifndef debug_199379947_h
+#define debug_199379947_h
 
 #ifndef NDDS_STANDALONE_TYPE
 #ifndef ndds_c_h
@@ -28,6 +28,9 @@ typedef struct debug {
     DDS_Float   roll ;
     DDS_Float   height ;
     DDS_Float   speed ;
+    DDS_Float   LeftAngle ;
+    DDS_Float   RightAngle ;
+    DDS_Float   BackAngle ;
 
 } debug ;
 #if (defined(RTI_WIN32) || defined (RTI_WINCE) || defined(RTI_INTIME)) && defined(NDDS_USER_DLL_EXPORT)

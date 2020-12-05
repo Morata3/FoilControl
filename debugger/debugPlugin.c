@@ -176,6 +176,15 @@ debugPluginSupport_print_data(
     RTICdrType_printFloat(
         &sample->speed, "speed", indent_level + 1);    
 
+    RTICdrType_printFloat(
+        &sample->LeftAngle, "LeftAngle", indent_level + 1);    
+
+    RTICdrType_printFloat(
+        &sample->RightAngle, "RightAngle", indent_level + 1);    
+
+    RTICdrType_printFloat(
+        &sample->BackAngle, "BackAngle", indent_level + 1);    
+
 }
 
 /* ----------------------------------------------------------------------------

@@ -9,8 +9,8 @@ For more information, type 'rtiddsgen -help' at a command shell
 or consult the RTI Connext manual.
 */
 
-#ifndef debugPlugin_199379892_h
-#define debugPlugin_199379892_h
+#ifndef debugPlugin_199379947_h
+#define debugPlugin_199379947_h
 
 #include "debug.h"
 
@@ -206,5 +206,5 @@ debugPlugin_delete(struct PRESTypePlugin *);
 #define NDDSUSERDllExport
 #endif
 
-#endif /* debugPlugin_199379892_h */
+#endif /* debugPlugin_199379947_h */
 

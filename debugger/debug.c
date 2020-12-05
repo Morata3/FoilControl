@@ -42,7 +42,7 @@ DDS_TypeCode* debug_get_typecode()
 {
     static RTIBool is_initialized = RTI_FALSE;
 
-    static DDS_TypeCode_Member debug_g_tc_members[4]=
+    static DDS_TypeCode_Member debug_g_tc_members[7]=
     {
 
         {
@@ -116,6 +116,60 @@ DDS_TypeCode* debug_get_typecode()
             1,
             NULL, /* Ignored */
             RTICdrTypeCodeAnnotations_INITIALIZER
+        }, 
+        {
+            (char *)"LeftAngle",/* Member name */
+            {
+                4,/* Representation ID */
+                DDS_BOOLEAN_FALSE,/* Is a pointer? */
+                -1, /* Bitfield bits */
+                NULL/* Member type code is assigned later */
+            },
+            0, /* Ignored */
+            0, /* Ignored */
+            0, /* Ignored */
+            NULL, /* Ignored */
+            RTI_CDR_REQUIRED_MEMBER, /* Is a key? */
+            DDS_PUBLIC_MEMBER,/* Member visibility */
+            1,
+            NULL, /* Ignored */
+            RTICdrTypeCodeAnnotations_INITIALIZER
+        }, 
+        {
+            (char *)"RightAngle",/* Member name */
+            {
+                5,/* Representation ID */
+                DDS_BOOLEAN_FALSE,/* Is a pointer? */
+                -1, /* Bitfield bits */
+                NULL/* Member type code is assigned later */
+            },
+            0, /* Ignored */
+            0, /* Ignored */
+            0, /* Ignored */
+            NULL, /* Ignored */
+            RTI_CDR_REQUIRED_MEMBER, /* Is a key? */
+            DDS_PUBLIC_MEMBER,/* Member visibility */
+            1,
+            NULL, /* Ignored */
+            RTICdrTypeCodeAnnotations_INITIALIZER
+        }, 
+        {
+            (char *)"BackAngle",/* Member name */
+            {
+                6,/* Representation ID */
+                DDS_BOOLEAN_FALSE,/* Is a pointer? */
+                -1, /* Bitfield bits */
+                NULL/* Member type code is assigned later */
+            },
+            0, /* Ignored */
+            0, /* Ignored */
+            0, /* Ignored */
+            NULL, /* Ignored */
+            RTI_CDR_REQUIRED_MEMBER, /* Is a key? */
+            DDS_PUBLIC_MEMBER,/* Member visibility */
+            1,
+            NULL, /* Ignored */
+            RTICdrTypeCodeAnnotations_INITIALIZER
         }
     };
 
@@ -129,7 +183,7 @@ DDS_TypeCode* debug_get_typecode()
             0, /* Ignored */
             0, /* Ignored */
             NULL, /* Ignored */
-            4, /* Number of members */
+            7, /* Number of members */
             debug_g_tc_members, /* Members */
             DDS_VM_NONE, /* Ignored */
             RTICdrTypeCodeAnnotations_INITIALIZER,
@@ -148,6 +202,9 @@ DDS_TypeCode* debug_get_typecode()
     debug_g_tc_members[1]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_float;
     debug_g_tc_members[2]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_float;
     debug_g_tc_members[3]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_float;
+    debug_g_tc_members[4]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_float;
+    debug_g_tc_members[5]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_float;
+    debug_g_tc_members[6]._representation._typeCode = (RTICdrTypeCode *)&DDS_g_tc_float;
 
     /* Initialize the values for member annotations. */
     debug_g_tc_members[0]._annotations._defaultValue._d = RTI_XCDR_TK_FLOAT;
@@ -178,6 +235,27 @@ DDS_TypeCode* debug_get_typecode()
     debug_g_tc_members[3]._annotations._maxValue._d = RTI_XCDR_TK_FLOAT;
     debug_g_tc_members[3]._annotations._maxValue._u.float_value = RTIXCdrFloat_MAX;
 
+    debug_g_tc_members[4]._annotations._defaultValue._d = RTI_XCDR_TK_FLOAT;
+    debug_g_tc_members[4]._annotations._defaultValue._u.float_value = 0.0f;
+    debug_g_tc_members[4]._annotations._minValue._d = RTI_XCDR_TK_FLOAT;
+    debug_g_tc_members[4]._annotations._minValue._u.float_value = RTIXCdrFloat_MIN;
+    debug_g_tc_members[4]._annotations._maxValue._d = RTI_XCDR_TK_FLOAT;
+    debug_g_tc_members[4]._annotations._maxValue._u.float_value = RTIXCdrFloat_MAX;
+
+    debug_g_tc_members[5]._annotations._defaultValue._d = RTI_XCDR_TK_FLOAT;
+    debug_g_tc_members[5]._annotations._defaultValue._u.float_value = 0.0f;
+    debug_g_tc_members[5]._annotations._minValue._d = RTI_XCDR_TK_FLOAT;
+    debug_g_tc_members[5]._annotations._minValue._u.float_value = RTIXCdrFloat_MIN;
+    debug_g_tc_members[5]._annotations._maxValue._d = RTI_XCDR_TK_FLOAT;
+    debug_g_tc_members[5]._annotations._maxValue._u.float_value = RTIXCdrFloat_MAX;
+
+    debug_g_tc_members[6]._annotations._defaultValue._d = RTI_XCDR_TK_FLOAT;
+    debug_g_tc_members[6]._annotations._defaultValue._u.float_value = 0.0f;
+    debug_g_tc_members[6]._annotations._minValue._d = RTI_XCDR_TK_FLOAT;
+    debug_g_tc_members[6]._annotations._minValue._u.float_value = RTIXCdrFloat_MIN;
+    debug_g_tc_members[6]._annotations._maxValue._d = RTI_XCDR_TK_FLOAT;
+    debug_g_tc_members[6]._annotations._maxValue._u.float_value = RTIXCdrFloat_MAX;
+
     debug_g_tc._data._sampleAccessInfo =
     debug_get_sample_access_info();
     debug_g_tc._data._typePlugin =
@@ -192,7 +270,7 @@ RTIXCdrSampleAccessInfo *debug_get_sample_access_info()
 {
     static RTIBool is_initialized = RTI_FALSE;
 
-    static RTIXCdrMemberAccessInfo debug_g_memberAccessInfos[4] =
+    static RTIXCdrMemberAccessInfo debug_g_memberAccessInfos[7] =
     {RTIXCdrMemberAccessInfo_INITIALIZER};
 
     static RTIXCdrSampleAccessInfo debug_g_sampleAccessInfo = 
@@ -213,6 +291,15 @@ RTIXCdrSampleAccessInfo *debug_get_sample_access_info()
 
     debug_g_memberAccessInfos[3].bindingMemberValueOffset[0] = 
     (RTIXCdrUnsignedLong) RTIXCdrUtility_pointerToULongLong(&((debug *)NULL)->speed);
+
+    debug_g_memberAccessInfos[4].bindingMemberValueOffset[0] = 
+    (RTIXCdrUnsignedLong) RTIXCdrUtility_pointerToULongLong(&((debug *)NULL)->LeftAngle);
+
+    debug_g_memberAccessInfos[5].bindingMemberValueOffset[0] = 
+    (RTIXCdrUnsignedLong) RTIXCdrUtility_pointerToULongLong(&((debug *)NULL)->RightAngle);
+
+    debug_g_memberAccessInfos[6].bindingMemberValueOffset[0] = 
+    (RTIXCdrUnsignedLong) RTIXCdrUtility_pointerToULongLong(&((debug *)NULL)->BackAngle);
 
     debug_g_sampleAccessInfo.memberAccessInfos = 
     debug_g_memberAccessInfos;
@@ -300,6 +387,12 @@ RTIBool debug_initialize_w_params(
     sample->height = 0.0f;
 
     sample->speed = 0.0f;
+
+    sample->LeftAngle = 0.0f;
+
+    sample->RightAngle = 0.0f;
+
+    sample->BackAngle = 0.0f;
 
     return RTI_TRUE;
 }
@@ -390,6 +483,18 @@ RTIBool debug_copy(
     }
     if (!RTICdrType_copyFloat (
         &dst->speed, &src->speed)) { 
+        return RTI_FALSE;
+    }
+    if (!RTICdrType_copyFloat (
+        &dst->LeftAngle, &src->LeftAngle)) { 
+        return RTI_FALSE;
+    }
+    if (!RTICdrType_copyFloat (
+        &dst->RightAngle, &src->RightAngle)) { 
+        return RTI_FALSE;
+    }
+    if (!RTICdrType_copyFloat (
+        &dst->BackAngle, &src->BackAngle)) { 
         return RTI_FALSE;
     }
 

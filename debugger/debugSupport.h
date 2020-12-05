@@ -8,8 +8,8 @@ For more information, type 'rtiddsgen -help' at a command shell
 or consult the RTI Connext manual.
 */
 
-#ifndef debugSupport_199379892_h
-#define debugSupport_199379892_h
+#ifndef debugSupport_199379947_h
+#define debugSupport_199379947_h
 
 /* Uses */
 #include "debug.h"
@@ -51,5 +51,5 @@ DDS_DATAREADER_C(debugDataReader, debugSeq, debug);
 #define NDDSUSERDllExport
 #endif
 
-#endif  /* debugSupport_199379892_h */
+#endif  /* debugSupport_199379947_h */
 
