@@ -43,7 +43,7 @@ public class communicator {
 	private static BufferedReader input;
 
 	private static SerialPort serialPort;
-	private static final String PUERTO = "/dev/ttyUSB0"; // LINUX 
+	private static String PUERTO; // LINUX 
 
 	private static final int TIMEOUT = 2000; // Milisegundos
 
@@ -79,10 +79,23 @@ public class communicator {
     }
 
     // -----------------------------------------------------------------------
+    	
+	public static String getPortName(){
+		CommPortIdentifier port=null;
+		Enumeration<?> puerto =CommPortIdentifier.getPortIdentifiers();
+		while (puerto.hasMoreElements()) {
+			port= (CommPortIdentifier) puerto.nextElement();
+			
+		}
+		System.out.println("PUERTO: " + port.getName());
+		return port.getName();
+
+	}
+
 	public static void inicializarConexion() {
 		CommPortIdentifier puertoID = null;
 		Enumeration puertoEnum = CommPortIdentifier.getPortIdentifiers();
-
+		PUERTO = getPortName();
 		while (puertoEnum.hasMoreElements()) {
 			CommPortIdentifier actualPuertoID = (CommPortIdentifier) puertoEnum.nextElement();
 			if (PUERTO.equals(actualPuertoID.getName())) {
@@ -113,9 +126,9 @@ public class communicator {
 
         pidSeq _dataSeq = new pidSeq();
         SampleInfoSeq _infoSeq = new SampleInfoSeq();
-	static int indexPitch = 1;
-	static int indexRoll = 2;
-	static int indexHeight = 3;
+	static int indexLeftAngle = 1;
+	static int indexRightAngle = 2;
+	static int indexBackAngle = 3;
 
         public void on_data_available(DataReader reader) {
             pidDataReader pidReader =
@@ -135,12 +148,10 @@ public class communicator {
                     if (info.valid_data) {
 			    String salida_pid = ((pid)_dataSeq.get(i)).toString();
 			    String datos[] = salida_pid.split("\n");
-//			    System.out.println("Received:"+datos[indexPitch]+"#"+datos[indexRoll]+"#"+datos[indexHeight]);
-			    String outputLine=new String("01"+datos[indexPitch].split(":")[1]
-					    +"#02"+datos[indexRoll].split(":")[1]
-					    +"#03"+datos[indexHeight].split(":")[1]+"\n");
-		    	    
-			    System.out.println(outputLine);
+			    
+			    String outputLine=new String("01"+datos[indexLeftAngle].split(":")[1]
+					    +"#02"+datos[indexRightAngle].split(":")[1]
+					    +"#03"+datos[indexBackAngle].split(":")[1]+"\n");
 			    try{
 		    		    output.write(outputLine.getBytes());
 		    	    }catch (IOException e){
@@ -471,7 +482,7 @@ public class communicator {
 		    		pitch = componentes[4]; 
 				roll = componentes[5]; 
 	    			altura = componentes[6]; 
-			}else System.out.println("********DATOS ARDUINO *********\n" + inputLine);
+			}else System.out.println("******** DATOS ARDUINO *********\n" + inputLine);
 				
 			instance_height.msg = altura;
 			instance_debug.height = Float.parseFloat(altura);
@@ -479,7 +490,7 @@ public class communicator {
 			writer_height.write(instance_height, instance_handle_height);
 			writer_debug.write(instance_debug, instance_handle_debug);
 			
-			System.out.println("****** DATOS RASPI********");
+			System.out.println("****** DATOS RASPI ********");
 			System.out.println("ALTURA: "+instance_height.msg);
 				
 			instance_imu.name = "Roll&Pitch";

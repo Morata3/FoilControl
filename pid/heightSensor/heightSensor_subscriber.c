@@ -87,11 +87,11 @@ void heightSensorListener_on_data_available(
 		token = strtok(NULL, " ");
 		index ++;
 	    }
-	 //  printf("Height: %s\n",height); 
+	   
 	   float correct_height;
 	   correct_height=pid_height(atof(height)); 
 	   publisher_pid(0,0,correct_height); 
-	   publisher_debugger(0,0,correct_height);
+	   publisher_debugger(0,0,0,0,0,correct_height);
 	}
     }
 

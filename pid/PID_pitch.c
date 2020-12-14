@@ -6,29 +6,54 @@
 #include <math.h>
 #include "PID.h"
 
+int pkp=8,pki=1,pkd=3500;
+
 float pid_pitch(float entrada){
 
-    const int setpoint=80,kp=2,ki=3,kd=1;
-    float  inicio=0,flag=1,error=0,integralError=0,derivadaError=0,dt=0.001, salida=0;
-    static float lastError = 0;
+int now=0;
+    struct timespec ts;
 
-//    printf("\nPitch last error => %f\n",lastError);
-//    printf("\nPitch medido => %f\n",entrada);
+    const float setpoint = 0;
+    float error=0,salida=0,salidaMixer=0;
+    int  timeChange=0;
+    float derivada=0;
+
+    static int lastTime=0;
+    static float integral=0,lastError=0,salidaPidMax=0;
+    static int inicio=0;
+
+    salidaPidMax = (30*pkp)+(30*350*pki)+((30/40)*pkd);
 
     error = (setpoint - entrada);
-    if(inicio!=0){
-        integralError = integralError + (error * dt);
-        derivadaError = (error - lastError) / dt;
-    }
-    salida = kp*error + ki*integralError + kd*derivadaError;
-    lastError = error;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+    now = (ts.tv_sec * 1000000000 + ts.tv_nsec)/10000000;
+    timeChange = now - lastTime;
 
-//    printf("\nPitch corregido => %f\n",salida);
+    if(inicio!=0){
+        integral = integral + (error * timeChange);
+        derivada = (error - lastError) / timeChange;
+    }
+    salida = pkp*error + pki*integral + pkd*derivada;
+    lastError = error;
+    lastTime = now;
+
+    if(salida>=salidaPidMax) salidaMixer = 180;
+    else salidaMixer = (salida*180/salidaPidMax);
+
     inicio=1;
 
-    sleep(dt);
+    return salidaMixer;
+}
 
-
-
-    return salida;
+int setPitchKp(int newValue){
+	pkp=newValue;
+	return pkp;
+}
+int setPitchKi(int newValue){
+	pki = newValue;
+	return pki;
+}
+int setPitchKd(int newValue){
+	pkd = newValue;
+	return pkd;
 }

@@ -95,15 +95,14 @@ void imuListener_on_data_available(
 		token = strtok(NULL, " ");
 		index ++;
 	    }
-	  // printf("Pitch: %s Roll:%s\n",pitch,roll); 
+	   //printf("Pitch: %s Roll:%s\n",pitch,roll); 
 	   float correct_pitch;
 	   float correct_roll;
-	   correct_pitch=pid_roll(atof(roll)); 
-	   correct_roll=pid_pitch(atof(pitch));
+	   correct_pitch=pid_pitch(atof(pitch)); 
+	   correct_roll=pid_roll(atof(roll));
 
-	   // Publicamos os datos do pitch e o roll correxidos
 	   publisher_pid(correct_pitch,correct_roll,0.00);
-	   publisher_debugger(correct_pitch,correct_roll,0.00);
+	   publisher_debugger(0.00,0.00,0.00,correct_pitch,correct_roll,0.00);
         }
     }
 

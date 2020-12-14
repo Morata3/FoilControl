@@ -14,6 +14,6 @@
 	
 	./objs/armv6vfphLinux3.xgcc4.7.2/pid/<executable>
 
-**** Queda por comprobar que funcionen o subscriber da altura e os publisher do PID.
 
-**** Para o imu e o height solo se usan os subscriber, para o pid solo se usa o publisher. O pid publica as correcións
+
+	******* Os distintso PIDs xa teñen o mixer incorporado, polo que a salida dos distintos programa	é o angulo que se lle debe pasar ao ARDUINO.

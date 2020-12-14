@@ -132,15 +132,6 @@ int setUp_pid(int domainId, int sample_count)
     }
     return 0;
 }
-    /* For a data type that has a key, if the same instance is going to be
-    written multiple times, initialize the key here
-    and register the keyed instance prior to writing */
-    /*
-    instance_handle = pidDataWriter_register_instance(
-        pid_writer, instance);
-    */
-    /* Main loop */
-   // for (count=0; (sample_count == 0) || (count < sample_count); ++count) {
 
 void publisher_pid(float pitch, float roll, float height){
 	
@@ -148,8 +139,6 @@ void publisher_pid(float pitch, float roll, float height){
 	instance->roll = roll;
 	instance->height = height;
 	
-
-//	printf("Roll: %f Pitch: %f  Height: %f\n", instance->roll, instance->pitch, instance->height);
         /* Write data */
         retcode = pidDataWriter_write(
             pid_writer, instance, &instance_handle);
@@ -158,44 +147,4 @@ void publisher_pid(float pitch, float roll, float height){
         }
 
         NDDS_Utility_sleep(&send_period);
-
-//    }
 }
-    /*
-    retcode = pidDataWriter_unregister_instance(
-        pid_writer, instance, &instance_handle);
-    if (retcode != DDS_RETCODE_OK) {
-        fprintf(stderr, "unregister instance error %d\n", retcode);
-    }
-    */
-    /* Delete data sample */
- /*   retcode = pidTypeSupport_delete_data_ex(instance, DDS_BOOLEAN_TRUE);
-    if (retcode != DDS_RETCODE_OK) {
-        fprintf(stderr, "pidTypeSupport_delete_data error %d\n", retcode);
-    }*/
-    /* Cleanup and delete delete all entities */         
-   // return publisher_shutdown(participant);
-
-
-/*int main(int argc, char *argv[])
-{
-    int domain_id = 0;
-    int sample_count = 0; 
-
-    if (argc >= 2) {
-        domain_id = atoi(argv[1]);
-    }
-    if (argc >= 3) {
-        sample_count = atoi(argv[2]);
-    }
-
-     Uncomment this to turn on additional logging
-    NDDS_Config_Logger_set_verbosity_by_category(
-        NDDS_Config_Logger_get_instance(),
-        NDDS_CONFIG_LOG_CATEGORY_API, 
-        NDDS_CONFIG_LOG_VERBOSITY_STATUS_ALL);
-    
-
-    return publisher_main(domain_id, sample_count);
-}*/
-

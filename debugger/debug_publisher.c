@@ -115,13 +115,16 @@ int setUp_debug(int domainId, int sample_count)
     }
 }
 
-void publisher_debugger(float pitch, float roll, float height){
+void publisher_debugger(float pitch, float roll, float height, float leftAngle, float rightAngle, float backAngle){
 
 	instance_debug->pitch = pitch;
 	instance_debug->roll = roll;
 	instance_debug->height = height;
-
-        /* Write data */
+	instance_debug->LeftAngle = leftAngle;
+	instance_debug->RightAngle = rightAngle;
+	instance_debug->BackAngle = backAngle;
+        
+	/* Write data */
         retcode = debugDataWriter_write(
             debug_writer, instance_debug, &instance_handle);
         if (retcode != DDS_RETCODE_OK) {
@@ -129,32 +132,3 @@ void publisher_debugger(float pitch, float roll, float height){
         }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
