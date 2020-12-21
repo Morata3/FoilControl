@@ -43,8 +43,8 @@ clean:
 export LD_LIBRARY_PATH := $(NDDSHOME)/lib/armv6vfphLinux3.xgcc4.7.2:/usr/lib/lwp:$(LD_LIBRARY_PATH)
 
 communicator: ./communicator.class
-	$(JAVA_PATH)  -classpath ".:$(RTI_CLASSPATH):$(HEIGHT_DIR):$(IMU_DIR):$(GPS_DIR):$(PID_DIR):$(DEBUG_DIR):/usr/share/java/RXTXcomm.jar" communicator $(ARGS)
- 
+	$(JAVA_PATH)  -classpath ".:$(RTI_CLASSPATH):$(HEIGHT_DIR):$(IMU_DIR):$(GPS_DIR):$(PID_DIR):$(DEBUG_DIR):/usr/share/java/RXTXcomm.jar" communicator $(ARGS)  
+
 heightSensorSubscriber: ./heightSensorSubscriber.class
 	$(JAVA_PATH)  -classpath ".:$(RTI_CLASSPATH)" heightSensorSubscriber $(ARGS)
 

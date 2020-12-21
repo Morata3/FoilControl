@@ -117,12 +117,12 @@ int setUp_debug(int domainId, int sample_count)
 
 void publisher_debugger(float pitch, float roll, float height, float leftAngle, float rightAngle, float backAngle){
 
-	instance_debug->pitch = pitch;
-	instance_debug->roll = roll;
-	instance_debug->height = height;
-	instance_debug->LeftAngle = leftAngle;
-	instance_debug->RightAngle = rightAngle;
-	instance_debug->BackAngle = backAngle;
+	if(pitch > 0) instance_debug->pitch = pitch;
+	if(roll > 0) instance_debug->roll = roll;
+	if(height > 0) instance_debug->height = height;
+	if(leftAngle > 0) instance_debug->LeftAngle = leftAngle;
+	if(rightAngle > 0) instance_debug->RightAngle = rightAngle;
+	if(backAngle > 0) instance_debug->BackAngle = backAngle;
         
 	/* Write data */
         retcode = debugDataWriter_write(

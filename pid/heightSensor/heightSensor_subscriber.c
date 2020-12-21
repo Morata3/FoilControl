@@ -89,9 +89,9 @@ void heightSensorListener_on_data_available(
 	    }
 	   
 	   float correct_height;
-	   correct_height=pid_height(atof(height)); 
-	   publisher_pid(0,0,correct_height); 
-	   publisher_debugger(0,0,0,0,0,correct_height);
+	   correct_height=pid_height(atof(height));
+	   publisher_pid(-1,-1,correct_height); 
+	   publisher_debugger(-1,-1,-1,-1,-1,correct_height);
 	}
     }
 
@@ -151,7 +151,7 @@ int subscriber_main(int domainId, int sample_count)
     DDS_ReturnCode_t retcode;
     const char *type_name = NULL;
     int count = 0;
-    struct DDS_Duration_t poll_period = {4,0};
+    struct DDS_Duration_t poll_period = {1,0};
 
     /* To customize participant QoS, use 
     the configuration file USER_QOS_PROFILES.xml */
@@ -230,7 +230,7 @@ int subscriber_main(int domainId, int sample_count)
 
     /* Main loop */
     for (count=0; (sample_count == 0) || (count < sample_count); ++count) {
-//        printf("heightSensor subscriber sleeping for %d sec...\n", poll_period.sec);
+      //  printf("heightSensor subscriber sleeping for %d sec...\n", poll_period.sec);
 
         NDDS_Utility_sleep(&poll_period);
     }

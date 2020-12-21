@@ -153,6 +153,7 @@ public class communicator {
 					    +"#02"+datos[indexRightAngle].split(":")[1]
 					    +"#03"+datos[indexBackAngle].split(":")[1]+"\n");
 			    try{
+				    //System.out.println(outputLine.getBytes());
 		    		    output.write(outputLine.getBytes());
 		    	    }catch (IOException e){
 		    		    e.printStackTrace();
@@ -464,8 +465,7 @@ public class communicator {
             final long sendPeriodMillis = 400; // 400 mili-seconds
 	    String[] datosSensores = new String[10];    		    
 
-	    //sampleCount = 4;	    
-	    //while(true){
+	    int printDebug = 0;
 	    for (int count = 0;
             (sampleCount == 0) || (count < sampleCount);
             ++count) {
@@ -482,33 +482,35 @@ public class communicator {
 		    		pitch = componentes[4]; 
 				roll = componentes[5]; 
 	    			altura = componentes[6]; 
-			}else System.out.println("******** DATOS ARDUINO *********\n" + inputLine);
+			}
+			else System.out.println("******** DATOS ARDUINO *********\n" + inputLine);
 				
+			if(printDebug >= 5){
+				instance_debug.height = Float.parseFloat(altura);
+				instance_debug.pitch = Float.parseFloat(pitch);
+				instance_debug.roll = Float.parseFloat(roll);
+				instance_debug.speed = Float.parseFloat(speed);
+				writer_debug.write(instance_debug, instance_handle_debug);
+				printDebug = 0;
+			}
+			
 			instance_height.msg = altura;
-			instance_debug.height = Float.parseFloat(altura);
-
 			writer_height.write(instance_height, instance_handle_height);
-			writer_debug.write(instance_debug, instance_handle_debug);
 			
 			System.out.println("****** DATOS RASPI ********");
 			System.out.println("ALTURA: "+instance_height.msg);
 				
 			instance_imu.name = "Roll&Pitch";
-			instance_imu.datos = new String(pitch+" "+roll);
-			instance_debug.pitch = Float.parseFloat(pitch);
-			instance_debug.roll = Float.parseFloat(roll);
-
+			instance_imu.datos = new String(pitch+" "+roll);		
 			writer_imu.write(instance_imu, instance_handle_imu);
-			writer_debug.write(instance_debug, instance_handle_debug);
 
 			System.out.println("IMU: "+instance_imu.datos);
 
 			instance_gps.name = "Speed";
                         instance_gps.datos = speed;
-			instance_debug.speed = Float.parseFloat(speed);
 			writer_gps.write(instance_gps, instance_handle_gps);
 
-                        System.out.println("VELOCIDADE: "+instance_gps.datos);
+                     //   System.out.println("VELOCIDADE: "+instance_gps.datos);
 	
 		}catch (Exception e){
 			System.out.println(e);
@@ -516,6 +518,7 @@ public class communicator {
 		
                 try {
                     Thread.sleep(sendPeriodMillis);
+		    printDebug ++;
                 } catch (InterruptedException ix) {
                     System.err.println("INTERRUPTED");
                     break;

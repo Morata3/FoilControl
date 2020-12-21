@@ -101,8 +101,8 @@ void imuListener_on_data_available(
 	   correct_pitch=pid_pitch(atof(pitch)); 
 	   correct_roll=pid_roll(atof(roll));
 
-	   publisher_pid(correct_pitch,correct_roll,0.00);
-	   publisher_debugger(0.00,0.00,0.00,correct_pitch,correct_roll,0.00);
+	   publisher_pid(correct_pitch,correct_roll,-1.00);
+	   publisher_debugger(-1.00,-1.00,-1.00,correct_pitch,correct_roll,-1.00);
         }
     }
 
