@@ -1,0 +1,63 @@
+*** ENTRADAS *** DataComm 
+Pitch: 0.00Roll: 0.00Height: 0.00Speed: -1.00*** SALIDAS *** DataControl
+Left Angle: 0.00Right Angle: 90.00Back Angle: 50.00Speed: -1.00*** ENTRADAS *** DataComm 
+Pitch: 0.00Roll: 0.00Height: 0.00Speed: 69.76*** ENTRADAS *** DataComm 
+Pitch: 0.00Roll: 0.00Height: 0.00Speed: 69.76*** ENTRADAS *** DataComm 
+Pitch: 0.00Roll: 0.00Height: 0.00Speed: 69.76*** ENTRADAS *** DataComm 
+Pitch: -5.43Roll: 46.07Height: 0.35Speed: 76.58*** ENTRADAS *** DataComm 
+Pitch: -5.68Roll: 46.66Height: 0.36Speed: 77.64*** ENTRADAS *** DataComm 
+Pitch: -5.44Roll: 48.29Height: 0.33Speed: 69.87*** SALIDAS *** DataControl
+Left Angle: 0.00Right Angle: 90.00Back Angle: 84.83Speed: 69.76*** ENTRADAS *** DataComm 
+Pitch: -5.90Roll: 47.92Height: 0.33Speed: 71.49*** ENTRADAS *** DataComm 
+Pitch: -5.90Roll: 47.92Height: 0.33Speed: 71.49*** ENTRADAS *** DataComm 
+Pitch: -5.90Roll: 47.92Height: 0.33Speed: 71.49*** ENTRADAS *** DataComm 
+Pitch: -6.13Roll: 43.43Height: 0.32Speed: 63.74*** ENTRADAS *** DataComm 
+Pitch: -5.23Roll: 44.53Height: 0.35Speed: 72.97*** ENTRADAS *** DataComm 
+Pitch: -6.07Roll: 46.86Height: 0.34Speed: 72.11*** SALIDAS *** DataControl
+Left Angle: 0.00Right Angle: 90.00Back Angle: 85.13Speed: 69.76*** ENTRADAS *** DataComm 
+Pitch: -5.58Roll: 45.87Height: 0.33Speed: 72.58*** ENTRADAS *** DataComm 
+Pitch: -5.58Roll: 45.87Height: 0.33Speed: 72.58*** ENTRADAS *** DataComm 
+Pitch: -5.58Roll: 45.87Height: 0.33Speed: 72.58*** ENTRADAS *** DataComm 
+Pitch: -5.24Roll: 44.79Height: 0.34Speed: 68.65*** ENTRADAS *** DataComm 
+Pitch: -6.19Roll: 48.58Height: 0.36Speed: 76.97*** ENTRADAS *** DataComm 
+Pitch: -5.81Roll: 48.15Height: 0.35Speed: 71.61*** ENTRADAS *** DataComm 
+Pitch: -6.19Roll: 49.47Height: 0.34Speed: 79.78*** SALIDAS *** DataControl
+Left Angle: 0.00Right Angle: 90.00Back Angle: 85.43Speed: 69.76*** ENTRADAS *** DataComm 
+Pitch: -6.10Roll: 46.17Height: 0.33Speed: 7.00*** ENTRADAS *** DataComm 
+Pitch: -5.25Roll: 47.84Height: 0.32Speed: 76.59*** ENTRADAS *** DataComm 
+Pitch: -5.25Roll: 47.84Height: 0.32Speed: 76.59
+*** ENTRADAS *** DataComm 
+Pitch: -1.00
+Roll: 48.63
+Height: 0.36
+Speed: 78.52
+
+*** SALIDAS *** DataControl
+Left Angle: -0.05
+Right Angle: 61.74
+Back Angle: 59.56
+Speed: 78.52
+
+*** ENTRADAS *** DataComm 
+Pitch: -1.00
+Roll: 49.40
+Height: -1.00
+Speed: 67.59
+
+*** SALIDAS *** DataControl
+Left Angle: -0.75
+Right Angle: 89.22
+Back Angle: 110.00
+Speed: 67.59
+
+*** ENTRADAS *** DataComm 
+Pitch: -1.00
+Roll: 49.40
+Height: -1.00
+Speed: 67.59
+
+*** SALIDAS *** DataControl
+Left Angle: -1.24
+Right Angle: 90.41
+Back Angle: 89.58
+Speed: 67.59

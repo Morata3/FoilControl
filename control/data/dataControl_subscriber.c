@@ -80,13 +80,17 @@ void controlListener_on_data_available(
 	    float  pitch = controlSeq_get_reference(&data_seq,i)->pitch;
 	    float  roll = controlSeq_get_reference(&data_seq,i)->roll;
 	    float  height = controlSeq_get_reference(&data_seq,i)->height;
-	    printf("Pitch: %.2f Roll: %.2f Height: %.2f\n", pitch, roll, height); 
+	    float  speed = controlSeq_get_reference(&data_seq,i)->speed;
+
+	   // printf("Pitch: %.2f Roll: %.2f Height: %.2f\n", pitch, roll, height); 
 
 	    pitch = pid_pitch(pitch);
 	    roll = pid_roll(roll);
 	    height = pid_height(height);
 	    
-	    publisher_data(pitch,roll,height);
+	   // printf("ESCRIBIENDO: Pitch: %.2f Roll: %.2f Height: %.2f\n", pitch, roll, height); 
+	    
+	    publisher_data(pitch,roll,height,speed);
         }
     }
 

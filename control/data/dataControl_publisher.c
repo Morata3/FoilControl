@@ -128,14 +128,14 @@ int publisher_setup(int domainId, int sample_count)
     return 0;
 }  
  
-void publisher_data(float pitch, float roll, float height){
+void publisher_data(float pitch, float roll, float height, float speed){
 
 	instance->pitch = pitch;
 	instance->roll = roll;
 	instance->height = height;
+	instance->speed = speed;
 
         /* Write data */
-	printf("Escribindo altura %.2f\n",height);
         retcode = controlDataWriter_write(
             control_writer, instance, &instance_handle);
         if (retcode != DDS_RETCODE_OK) {

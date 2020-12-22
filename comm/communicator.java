@@ -146,7 +146,7 @@ public class communicator {
 
                                   String outputLine=new String("01"+pitch
                                       	    +"#02"+roll
-                                      	    +"#03"+height+"\n");
+                                      	    +"#03"+height+ "#04"+speed+"\n");
 				  System.out.println("SALIDA CONTROL: " +outputLine);
                                   try{
                                          // System.out.println(outputLine.getBytes());
