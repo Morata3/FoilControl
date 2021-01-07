@@ -58,18 +58,10 @@ public class communicator {
 
     }
 
-    // -----------------------------------------------------------------------
-    // Private Methods
-    // -----------------------------------------------------------------------
-
-    // --- Constructors: -----------------------------------------------------
-
     public communicator() {
         super();
     }
 
-    // -----------------------------------------------------------------------
-    	
 	public static String getPortName(){
 		CommPortIdentifier port=null;
 		Enumeration<?> puerto =CommPortIdentifier.getPortIdentifiers();
@@ -99,7 +91,7 @@ public class communicator {
 		}
 
 		try {
-			serialPort = (SerialPort) puertoID.open("heightSensor", TIMEOUT);
+			serialPort = (SerialPort) puertoID.open("communicator", TIMEOUT);
 			
 			// Parámetros puerto serie
 			serialPort.setSerialPortParams(DATA_RATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
@@ -136,7 +128,7 @@ public class communicator {
 				  String salida_control = ((comm)_dataSeq.get(i)).toString();
 				  
 		                  String[] datos = salida_control.split("\n");
-				  //System.out.println(salida_control);
+				  System.out.println("DDS_CONTROL: " + salida_control);
 				  String speed = datos[1].split(":")[1];
 				  String longitud = datos[2].split(":")[1];
 				  String latitud = datos[3].split(":")[1];

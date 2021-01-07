@@ -67,7 +67,7 @@ void debuggerListener_on_data_available(
     // Save name of topic
     topic_name = DDS_TopicDescription_get_name(DDS_DataReader_get_topicdescription(reader));
   	
-    log = fopen("DDS_log","ab+");
+    log = fopen("../logs/DDS.log","ab+");
 
     retcode = debuggerDataReader_take(
         debugger_reader,
@@ -88,14 +88,14 @@ void debuggerListener_on_data_available(
 		float speed = debuggerSeq_get_reference(&data_seq, i)->speed;
 
 	    	if(strcmp("DataControl",topic_name)==0){
-		       	fprintf(log,"\n*** SALIDAS *** %s\n");	
-			fprintf(log,"Left Angle: %.2f\n",pitch);	
-			fprintf(log,"Right Angle: %.2f\n",roll);	
+		       	fprintf(log,"\n*** SALIDAS *** \n");	
+			fprintf(log,"Left Angle: %.2f\n",roll);	
+			fprintf(log,"Right Angle: %.2f\n",pitch);	
 			fprintf(log,"Back Angle: %.2f\n",height);	
 			fprintf(log,"Speed: %.2f\n",speed);	
 		}
 	    	else{
-		       	fprintf(log,"\n*** ENTRADAS *** %s \n");
+		       	fprintf(log,"\n*** ENTRADAS *** \n");
 			fprintf(log,"Pitch: %.2f\n",pitch);	
 			fprintf(log,"Roll: %.2f\n",roll);	
 			fprintf(log,"Height: %.2f\n",height);	
@@ -253,7 +253,6 @@ int subscriber_main(int domainId, int sample_count)
 
     /* Main loop */
     for (count=0; (sample_count == 0) || (count < sample_count); ++count) {
-       // printf("debugger subscriber sleeping for %d sec...\n",poll_period.sec);
 
         NDDS_Utility_sleep(&poll_period);
     }
@@ -266,7 +265,6 @@ int main(int argc, char *argv[])
 {
     int domain_id = 0;
     int sample_count = 0; /* infinite loop */
-
     if (argc >= 2) {
         domain_id = atoi(argv[1]);
     }

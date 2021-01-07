@@ -10,20 +10,17 @@ int rkp=8, rki=1, rkd=3500;
 float pid_roll(float entrada){
 
     struct timespec ts;
-    const int SERVO_MIN_POS = 50, SERVO_MAX_POS = 110;  //SERVO_MIN_POS y SERVO_MAX_POS son los ángulos mínimo y máximo que puede manejar el servo.
     const long int TIME_FACTOR = 100000000;
-    const float setpoint = 0, MAX_medida = 45;                                 //MAX_medida se utiliza para calcular el error máximo cuando el barco se inclina demasiado en el eje x
-    const float dt = 4;                                                        //Diferencial de tiempo entre llamadas a la función PID
+    const float setpoint = 0, MAX_CORRECTION = 45;         
+    const float dt = 4;
 
-    float error=0,salidaPID=0,salidaPIDMixer=0;
+    float error=0,salidaPID=0,salidaPIDGrados=0;
     int timeChange=0,now=0;
     float derivada=0;
 
-    //Valor máximo de salida del PID para la inclinación en el eje x, en este punto, el foil izquierdo estará a menor altura que el foil derecho
-    float MAX_salidaPID = ((setpoint-(-MAX_medida))*rkp)+(dt*(setpoint-(-MAX_medida))*rki)+((setpoint-(-MAX_medida)/dt)*rkd);
+    float MAX_salidaPID = ((setpoint-(-MAX_CORRECTION))*rkp)+(dt*(setpoint-(-MAX_CORRECTION))*rki)+((setpoint-(-MAX_CORRECTION)/dt)*rkd);
 
-    //Valor mínimo de salida del PID para la inclinación en el eje x, en este punto, el foil derecho estará a menor altura que el foil izquierdo
-    float MIN_salidaPID = ((setpoint-MAX_medida)*rkp)+(dt*(setpoint-MAX_medida)*rki)+(((setpoint-MAX_medida)/dt)*rkd);
+    float MIN_salidaPID = ((setpoint-MAX_CORRECTION)*rkp)+(dt*(setpoint-MAX_CORRECTION)*rki)+(((setpoint-MAX_CORRECTION)/dt)*rkd);
 
 
     static int lastTime=0;
@@ -50,21 +47,17 @@ float pid_roll(float entrada){
     lastTime = now;
 
 
-    //IMPLEMENTACIÓN MÍXER
-    if(salidaPID>MAX_salidaPID) salidaPIDMixer = SERVO_MIN_POS;           //El servo del foil izquierdo va a recibir un ángulo de 50 º
-    else if (salidaPID<MIN_salidaPID) salidaPIDMixer = SERVO_MAX_POS;     //El servo del foil izquierdo va a recibir un ángulo de 110 º
-
+    //MAPEO A GRADOS
+    if(salidaPID>MAX_salidaPID || salidaPID<MIN_salidaPID) salidaPIDGrados = MAX_CORRECTION;          
     else if (salidaPID<=MAX_salidaPID && salidaPID>=0) {
-      salidaPIDMixer = 90 - ((salidaPID/MAX_salidaPID)*90);
-      if(salidaPIDMixer < SERVO_MIN_POS)  salidaPIDMixer = SERVO_MIN_POS;
+      salidaPIDGrados = ((salidaPID/MAX_salidaPID)*MAX_CORRECTION);
     }
 
     else if (salidaPID>=MIN_salidaPID && salidaPID<0) {
-      salidaPIDMixer =  90 + ((salidaPID/MIN_salidaPID)*90);
-      if(salidaPIDMixer > SERVO_MAX_POS)  salidaPIDMixer = SERVO_MAX_POS;
+      salidaPIDGrados = -((salidaPID/MIN_salidaPID)*MAX_CORRECTION);
     }
 
-    return salidaPIDMixer;  //Esta salida va dirigida al servo del foil izquierdo
+    return salidaPIDGrados;
 }
 
 int setRollKp(int newValue){

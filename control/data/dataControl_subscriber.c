@@ -57,6 +57,8 @@ void controlListener_on_data_available(
     struct DDS_SampleInfoSeq info_seq = DDS_SEQUENCE_INITIALIZER;
     DDS_ReturnCode_t retcode;
     int i;
+    float rightAngle, leftAngle, backAngle;
+    float rollAngle, heightAngle, pitchAngle;
 
     control_reader = controlDataReader_narrow(reader);
     if (control_reader == NULL) {
@@ -82,15 +84,19 @@ void controlListener_on_data_available(
 	    float  height = controlSeq_get_reference(&data_seq,i)->height;
 	    float  speed = controlSeq_get_reference(&data_seq,i)->speed;
 
-	   // printf("Pitch: %.2f Roll: %.2f Height: %.2f\n", pitch, roll, height); 
-
-	    pitch = pid_pitch(pitch);
-	    roll = pid_roll(roll);
-	    height = pid_height(height);
-	    
-	   // printf("ESCRIBIENDO: Pitch: %.2f Roll: %.2f Height: %.2f\n", pitch, roll, height); 
-	    
-	    publisher_data(pitch,roll,height,speed);
+	    pitchAngle = pid_pitch(pitch);
+	    rollAngle = pid_roll(roll);
+	    heightAngle = pid_height(height);
+	    backAngle = heightAngle;
+	    if(rollAngle > 0){
+		    leftAngle = heightAngle + rollAngle;
+		    rightAngle = heightAngle - (rollAngle/2);
+	    }
+	    else{
+		    rightAngle = heightAngle + rollAngle;
+		    leftAngle = heightAngle - (rollAngle/2);
+	    }
+	    publisher_data(backAngle,leftAngle,rightAngle,speed);
         }
     }
 
@@ -151,6 +157,8 @@ int subscriber_main(int domainId, int sample_count)
     const char *type_name = NULL;
     int count = 0;
     struct DDS_Duration_t poll_period = {4,0};
+	    printf("%d",count);
+	    count ++;
 
     /* To customize participant QoS, use 
     the configuration file USER_QOS_PROFILES.xml */
@@ -227,7 +235,6 @@ int subscriber_main(int domainId, int sample_count)
 
     /* Main loop */
     for (count=0; (sample_count == 0) || (count < sample_count); ++count) {
-       // printf("control subscriber sleeping for %d sec...\n",poll_period.sec);
 
         NDDS_Utility_sleep(&poll_period);
     }
@@ -241,7 +248,6 @@ int main(int argc, char *argv[])
 {
     int domain_id = 0;
     int sample_count = 0; /* infinite loop */
-
     if (argc >= 2) {
         domain_id = atoi(argv[1]);
     }

@@ -10,9 +10,9 @@ int hkp=8, hki=1, hkd=3500;
 float pid_height(float entrada){
 
     struct timespec ts;
-    const int SERVO_MIN_POS = 50, SERVO_MAX_POS = 110;                          //SERVO_MIN_POS y SERVO_MAX_POS son los ángulos mínimo y máximo que puede manejar el servo.
+    const int SERVO_MIN_POS = 110 , SERVO_MAX_POS = 50;                          //SERVO_MIN_POS y SERVO_MAX_POS son los ángulos mínimo y máximo que puede manejar el servo.
     const long int TIME_FACTOR = 100000000;
-    const float setpoint = 0.35, MAX_medida = 0.5;                              //MAX_medida se utiliza para calcular el error máximo cuando el barco se eleva demasiado
+    const float setpoint = 350, MAX_medida = 500;                              //MAX_medida se utiliza para calcular el error máximo cuando el barco se eleva demasiado
     const float dt = 4;                                                         //Diferencial de tiempo entre llamadas a la función PID
 
     float error=0,salidaPID=0,salidaPIDMixer=0;

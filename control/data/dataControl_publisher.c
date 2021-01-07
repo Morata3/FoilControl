@@ -128,11 +128,11 @@ int publisher_setup(int domainId, int sample_count)
     return 0;
 }  
  
-void publisher_data(float pitch, float roll, float height, float speed){
+void publisher_data(float backAngle, float leftAngle, float rightAngle, float speed){
 
-	instance->pitch = pitch;
-	instance->roll = roll;
-	instance->height = height;
+	instance->pitch = rightAngle;
+	instance->roll = leftAngle;
+	instance->height = backAngle;
 	instance->speed = speed;
 
         /* Write data */
