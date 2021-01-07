@@ -1,0 +1,9 @@
+struct debug {
+	float pitch;
+	float roll;
+	float height;
+	float speed;
+	float LeftAngle;
+	float RightAngle;
+	float BackAngle;
+};

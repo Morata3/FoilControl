@@ -1,0 +1,8 @@
+struct debugger {
+	float speed;
+	float longitud;
+	float latitud;
+	float pitch;
+	float roll;
+	float height;
+};
