@@ -4,7 +4,6 @@ NDDSHOME := "/home/pi/rti_connext_dds-6.0.1"
 endif
 
 SOURCE_DIR = 
-PID_DIR = ../pid/
 
 TARGET_ARCH = armv6vfphLinux3.xgcc4.7.2
 
@@ -50,13 +49,13 @@ LIBS = -L$(NDDSHOME)/lib/$(TARGET_ARCH) \
         -lnddsc$(SHAREDLIB_SFX)$(DEBUG_SFX) -lnddscore$(SHAREDLIB_SFX)$(DEBUG_SFX) \
         $(SYSLIBS)
 
-CDRSOURCES    = debug.idl
-SOURCES = $(SOURCE_DIR)debugPlugin.c $(SOURCE_DIR)debug.c $(SOURCE_DIR)debugSupport.c $(SOURCE_DIR)debug_publisher.c
+CDRSOURCES    = debugger.idl
+SOURCES = $(SOURCE_DIR)debuggerPlugin.c $(SOURCE_DIR)debugger.c $(SOURCE_DIR)debuggerSupport.c
 COMMONSOURCES = $(notdir $(SOURCES))
-EXEC          = debug_subscriber 
+
+EXEC          = debugger_subscriber debugger_publisher
 DIRECTORIES   = objs.dir objs/$(TARGET_ARCH).dir
 COMMONOBJS    = $(COMMONSOURCES:%.c=objs/$(TARGET_ARCH)/%.o)
-
 
 # We actually stick the objects in a sub directory to keep your directory clean.
 $(TARGET_ARCH) : $(DIRECTORIES) $(COMMONOBJS) \
@@ -66,28 +65,16 @@ $(TARGET_ARCH) : $(DIRECTORIES) $(COMMONOBJS) \
 objs/$(TARGET_ARCH)/% : objs/$(TARGET_ARCH)/%.o
 	$(LINKER) $(LINKER_FLAGS)   -o $@ $@.o $(COMMONOBJS) $(LIBS)
 
-objs/$(TARGET_ARCH)/%.o : $(SOURCE_DIR)%.c   $(SOURCE_DIR)debug.h 
+objs/$(TARGET_ARCH)/%.o : $(SOURCE_DIR)%.c   $(SOURCE_DIR)debugger.h 
 	$(COMPILER) $(COMPILER_FLAGS)  -o $@ $(DEFINES) $(INCLUDES) -c $<
-
-changeConstant: changeConstant.o objs/$(TARGET_ARCH)/PID_roll.o objs/$(TARGET_ARCH)/PID_pitch.o objs/$(TARGET_ARCH)/PID_height.o
-	gcc -o changeConstant changeConstant.o objs/$(TARGET_ARCH)/PID*
-
-changeConstant.o : changeConstant.c $(PID_DIR)PID.h
-	gcc -c changeConstant.c $(PID_DIR)PID.h
-
-objs/$(TARGET_ARCH)/PID%.o : $(SOURCE_DIR)PID%.c   $(SOURCE_DIR)PID.h
-	$(COMPILER) -o $@ $(DEFINES) -c $<
-
 
 #
 # Uncomment these lines if you want the support files regenerated when idl
 # file is modified
-#
-#
-#  $(SOURCE_DIR)debugPlugin.c $(SOURCE_DIR)debug.c $(SOURCE_DIR)debugSupport.c \
-#  $(SOURCE_DIR)debug.h $(SOURCE_DIR)debugPlugin.h $(SOURCE_DIR)debugSupport.h : \
-#		$(SOURCE_DIR)debug.idl
-#	$(NDDSHOME)/bin/rtiddsgen $(SOURCE_DIR)debug.idl -replace -language C
+#  $(SOURCE_DIR)debuggerPlugin.c $(SOURCE_DIR)debugger.c $(SOURCE_DIR)debuggerSupport.c \
+#  $(SOURCE_DIR)debugger.h $(SOURCE_DIR)debuggerPlugin.h $(SOURCE_DIR)debuggerSupport.h : \
+#		$(SOURCE_DIR)debugger.idl
+#	$(NDDSHOME)/bin/rtiddsgen $(SOURCE_DIR)debugger.idl -replace -language C
 #
 # Here is how we create those subdirectories automatically.
 %.dir : 

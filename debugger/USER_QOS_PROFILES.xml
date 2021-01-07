@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <!-- 
 Description
-XML QoS Profile for debug
+XML QoS Profile for debugger
 
 (c) Copyright, Real-Time Innovations, 2012.  All rights reserved.
 RTI grants Licensee a license to use, modify, compile, and create derivative
@@ -127,25 +127,26 @@ XML" chapter in the RTI Connext DDS Core Libraries User's Manual.
 
         A QoS library is a named set of QoS profiles.
     -->
-    <qos_library name="debug_Library">
+    <qos_library name="debugger_Library">
 
         <!-- QoS profile used to configure reliable communication between the DataWriter 
              and DataReader created in the example code.
 
              A QoS profile groups a set of related QoS.
         -->
-        <qos_profile name="debug_Profile" base_name="BuiltinQosLib::Generic.StrictReliable" is_default_qos="true">
+
+        <qos_profile name="debugger_Profile" base_name="BuiltinQosLib::Generic.StrictReliable" is_default_qos="true">
             <!-- QoS used to configure the data writer created in the example code -->                
             <datawriter_qos>
                 <publication_name>
-                    <name>debugDataWriter</name>
+                    <name>debuggerDataWriter</name>
                 </publication_name>
             </datawriter_qos>
 
             <!-- QoS used to configure the data reader created in the example code -->                
             <datareader_qos>
                 <subscription_name>
-                    <name>debugDataReader</name>
+                    <name>debuggerDataReader</name>
                 </subscription_name>
             </datareader_qos>
             <participant_qos>
@@ -155,8 +156,8 @@ XML" chapter in the RTI Connext DDS Core Libraries User's Manual.
                 application from another when you're debugging.
                 -->
                 <participant_name>
-                    <name>debugParticipant</name>
-                    <role_name>debugParticipantRole</role_name>
+                    <name>debuggerParticipant</name>
+                    <role_name>debuggerParticipantRole</role_name>
                 </participant_name>
 
             </participant_qos>

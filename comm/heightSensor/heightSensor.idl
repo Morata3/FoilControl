@@ -1,3 +1,0 @@
-struct heightSensor {
-    string<128> msg;
-};
