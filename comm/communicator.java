@@ -14,6 +14,11 @@ import gnu.io.CommPortIdentifier;
 import gnu.io.SerialPort;
 
 import java.io.BufferedReader;
+import java.io.FileWriter;
+import java.io.PrintWriter;
+import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.sql.Timestamp;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -27,7 +32,8 @@ public class communicator {
     // -----------------------------------------------------------------------
 	private static OutputStream output = null;
 	private static BufferedReader input;
-
+    
+	private static final String LogfileName = "../logs/communicator.log";
 	private static SerialPort serialPort;
 	private static String PUERTO; // LINUX 
 	private static final int TIMEOUT = 2000; // Milisegundos
@@ -65,7 +71,7 @@ public class communicator {
 			port= (CommPortIdentifier) puerto.nextElement();
 			
 		}
-		System.out.println("PUERTO: " + port.getName());
+		log("PUERTO", port.getName());
 		return port.getName();
 
 	}
@@ -83,7 +89,7 @@ public class communicator {
 		}
 
 		if (puertoID == null) {
-			System.out.println("ERROR ID PUERTO");
+			log("ERROR", "Id port not found");
 		}
 
 		try {
@@ -95,7 +101,7 @@ public class communicator {
 			output = serialPort.getOutputStream();
 			input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
 		} catch (Exception e) {
-			System.out.println("ERROR CON PUERTO");
+			log("ERROR", "trying to open the port");
 
 		}
 	}
@@ -124,18 +130,18 @@ public class communicator {
 				  String salida_control = ((comm)_dataSeq.get(i)).toString();
 				  
 		                  String[] datos = salida_control.split("\n");
-				  System.out.println("DDS_CONTROL: " + salida_control);
+			//	  System.out.println("DDS_CONTROL: " + salida_control);
 				  String speed = datos[1].split(":")[1];
 				  String longitud = datos[2].split(":")[1];
 				  String latitud = datos[3].split(":")[1];
-				  String pitch = datos[4].split(":")[1];
-				  String roll = datos[5].split(":")[1];
-				  String height = datos[6].split(":")[1];
+				  String rightAngle = datos[4].split(":")[1];
+				  String leftAngle = datos[5].split(":")[1];
+				  String backAngle = datos[6].split(":")[1];
 
-                                  String outputLine=new String("01"+pitch
-                                      	    +"#02"+roll
-                                      	    +"#03"+height+ "#04"+speed+"\n");
-				  System.out.println("SALIDA CONTROL: " +outputLine);
+                                  String outputLine=new String("01"+ leftAngle
+                                      	    +"#02"+ rightAngle
+                                      	    +"#03"+ backAngle + "#04"+speed+"\n");
+				  log("SALIDA CONTROL", outputLine);
                                   try{
                                          // System.out.println(outputLine.getBytes());
                                          output.write(outputLine.getBytes());
@@ -256,7 +262,7 @@ public class communicator {
 			    // *** PUBLICANDO *** //
 			    //--------------------//
 
-            final long sendPeriodMillis = 400; // 400 mili-seconds
+            final long sendPeriodMillis = 500; // 400 mili-seconds
 	    String[] datosSensores = new String[10];    		    
 
 	    int printDebug = 0;
@@ -277,7 +283,7 @@ public class communicator {
 				roll = componentes[5]; 
 	    			altura = componentes[6]; 
 			}
-			else System.out.println("******** DATOS ARDUINO *********\n" + inputLine);
+			else log("ARDUINO", inputLine);
 				
 			instance.speed = Float.parseFloat(speed);
 			instance.longitud = Float.parseFloat(longitud);
@@ -287,6 +293,7 @@ public class communicator {
                         instance.roll = Float.parseFloat(roll);
 			writer.write(instance, instance_handle);
 
+			/*
 			System.out.println("*****************************");
                         System.out.println("VELOCIDADE: "+instance.speed);
                         System.out.println("LONGITUD: "+instance.longitud);
@@ -295,9 +302,10 @@ public class communicator {
                         System.out.println("PITCH: "+instance.pitch);
                         System.out.println("ROLL: "+instance.roll);
 			System.out.println("*****************************");
+			*/
 	
 		}catch (Exception e){
-			System.out.println(e);
+			e.printStackTrace();
 	    	}
 		
                 try {
@@ -321,6 +329,30 @@ public class communicator {
                 delete_participant(participant);
             }
         }
+    }
+
+    public static void log(String typeLog, String log){
+	    FileWriter logFile = null;
+	    PrintWriter printWriter = null;
+	    Date now = new Date();
+	    Timestamp timestamp = new Timestamp(now.getTime());
+	    String logTime = new SimpleDateFormat("HH:mm:ss.SSS").format(timestamp);
+        
+	    try
+    	    {
+	    	    logFile = new FileWriter(LogfileName,true);
+		    printWriter = new PrintWriter(logFile);	 
+		    printWriter.println(logTime + "-> [" + typeLog + "]" + " -> " + log);
+    	    } catch (Exception e) {
+	    	    e.printStackTrace();
+    	    } finally {
+	     	    try {
+		 	    if (logFile != null)
+		      		    logFile.close();
+	 	    } catch (Exception e2) {
+	      		    e2.printStackTrace();
+	 	    }
+    	    }
     }
 }
 
