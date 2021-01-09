@@ -156,7 +156,7 @@ int subscriber_main(int domainId, int sample_count)
     DDS_ReturnCode_t retcode;
     const char *type_name = NULL;
     int count = 0;
-    struct DDS_Duration_t poll_period = {4,0};
+    struct DDS_Duration_t poll_period = {1,0};
 	    printf("%d",count);
 	    count ++;
 
