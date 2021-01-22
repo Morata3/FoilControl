@@ -38,17 +38,16 @@ public class communicator {
 	private static String PUERTO; // LINUX 
 	private static final int TIMEOUT = 2000; // Milisegundos
 	private static final int DATA_RATE = 9600;
+	private static int ronda = 0;
 
 	private static String prefijo, speed, longitud, latitud, pitch, roll, altura;
 
     public static void main(String[] args) {
-        // --- Get domain ID --- //
         int domainId = 0;
         if (args.length >= 1) {
             domainId = Integer.valueOf(args[0]).intValue();
         }
 
-        // -- Get max loop count; 0 means infinite loop --- //
         int sampleCount = 0;
         if (args.length >= 2) {
             sampleCount = Integer.valueOf(args[1]).intValue();
@@ -94,16 +93,16 @@ public class communicator {
 
 		try {
 			serialPort = (SerialPort) puertoID.open("communicator", TIMEOUT);
-
-			// Parámetros puerto serie
 			serialPort.setSerialPortParams(DATA_RATE, SerialPort.DATABITS_8, SerialPort.STOPBITS_1,SerialPort.PARITY_NONE);
-
 			output = serialPort.getOutputStream();
 			input = new BufferedReader(new InputStreamReader(serialPort.getInputStream()));
+
+			output.write(new String("reset").getBytes());	
 		} catch (Exception e) {
 			log("ERROR", "trying to open the port");
 
 		}
+
 	}
 
 	private static class commListener extends DataReaderAdapter {
@@ -122,7 +121,6 @@ public class communicator {
 	                    SampleStateKind.ANY_SAMPLE_STATE,
 	                    ViewStateKind.ANY_VIEW_STATE,
 	                    InstanceStateKind.ANY_INSTANCE_STATE);
-
 	                for(int i = 0; i < _dataSeq.size(); ++i) {
 	                    SampleInfo info = (SampleInfo)_infoSeq.get(i);
 
@@ -130,18 +128,17 @@ public class communicator {
 				  String salida_control = ((comm)_dataSeq.get(i)).toString();
 				  
 		                  String[] datos = salida_control.split("\n");
-			//	  System.out.println("DDS_CONTROL: " + salida_control);
 				  String speed = datos[1].split(":")[1];
 				  String longitud = datos[2].split(":")[1];
 				  String latitud = datos[3].split(":")[1];
 				  String rightAngle = datos[4].split(":")[1];
 				  String leftAngle = datos[5].split(":")[1];
 				  String backAngle = datos[6].split(":")[1];
-
+					
                                   String outputLine=new String("01"+ leftAngle
                                       	    +"#02"+ rightAngle
                                       	    +"#03"+ backAngle + "#04"+speed+"\n");
-				  log("SALIDA CONTROL", outputLine);
+				  log("SALIDA CONTROL "+ "numero " + ronda++, outputLine);
                                   try{
                                          // System.out.println(outputLine.getBytes());
                                          output.write(outputLine.getBytes());
@@ -193,7 +190,6 @@ public class communicator {
                 System.err.println("create_publisher error\n");
                 return;
             }                   
-
 
             // --- Create topics --- //
             String typeName = commTypeSupport.get_type_name();
@@ -264,7 +260,7 @@ public class communicator {
 
             final long sendPeriodMillis = 500; // 400 mili-seconds
 	    String[] datosSensores = new String[10];    		    
-
+		
 	    int printDebug = 0;
 	    for (int count = 0;
             (sampleCount == 0) || (count < sampleCount);
@@ -273,6 +269,7 @@ public class communicator {
                 /* Leyendo del ARDUINO y publicando */
 		try{    
 			String inputLine = input.readLine();
+			log("INPUT " + "numero " + printDebug, inputLine);
 	    		String[] componentes = inputLine.split("#");
 			prefijo = componentes[0]; 
 	    		if (prefijo.equals("000")) {
@@ -289,8 +286,11 @@ public class communicator {
 			instance.longitud = Float.parseFloat(longitud);
 			instance.latitud = Float.parseFloat(latitud);
 			instance.height = Float.parseFloat(altura);
-			instance.pitch = Float.parseFloat(pitch); 		
-                        instance.roll = Float.parseFloat(roll);
+			if(pitch.equals("nan") == false) instance.pitch = Float.parseFloat(pitch);		
+			else log("pitch",pitch);
+
+                        if(roll.equals("nan") == false) instance.roll = Float.parseFloat(roll);
+			else log("roll",roll);
 			writer.write(instance, instance_handle);
 
 			/*

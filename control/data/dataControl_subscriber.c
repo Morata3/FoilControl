@@ -5,6 +5,7 @@
 #include "dataControlSupport.h"
 #include "PID.h"
 #include "dataControl_publisher.h"
+#include "logger.h"
 
 void controlListener_on_requested_deadline_missed(
     void* listener_data,
@@ -59,7 +60,6 @@ void controlListener_on_data_available(
     int i;
     float rightAngle, leftAngle, backAngle;
     float rollAngle, heightAngle, pitchAngle;
-
     control_reader = controlDataReader_narrow(reader);
     if (control_reader == NULL) {
         fprintf(stderr, "DataReader narrow error\n");
@@ -83,21 +83,20 @@ void controlListener_on_data_available(
 	    float  roll = controlSeq_get_reference(&data_seq,i)->roll;
 	    float  height = controlSeq_get_reference(&data_seq,i)->height;
 	    float  speed = controlSeq_get_reference(&data_seq,i)->speed;
-
+	    char bufferLog[64];
+		
 	    pitchAngle = pid_pitch(pitch);
 	    rollAngle = pid_roll(roll);
 	    heightAngle = pid_height(height);
-	    backAngle = heightAngle;
-	    if(rollAngle > 0){
-		    leftAngle = heightAngle + rollAngle;
-		    rightAngle = heightAngle - (rollAngle/2);
-	    }
-	    else{
-		    rightAngle = heightAngle + rollAngle;
-		    leftAngle = heightAngle - (rollAngle/2);
-	    }
+
+	    backAngle = heightAngle;	    
+	    leftAngle = heightAngle + rollAngle;
+	    rightAngle = heightAngle - (rollAngle/2);
+
 	    publisher_data(backAngle,leftAngle,rightAngle,speed);
-        }
+
+    	    loggerDataCorrection(height,roll,pitch,heightAngle,rollAngle,pitchAngle);
+	}
     }
 
     retcode = controlDataReader_return_loan(

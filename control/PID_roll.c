@@ -4,9 +4,7 @@
 #include <unistd.h>
 #include <sys/time.h>
 #include <math.h>
-
 int rkp=8, rki=1, rkd=3500;
-
 float pid_roll(float entrada){
 
     struct timespec ts;
@@ -22,13 +20,10 @@ float pid_roll(float entrada){
 
     float MIN_salidaPID = ((setpoint-MAX_CORRECTION)*rkp)+(dt*(setpoint-MAX_CORRECTION)*rki)+(((setpoint-MAX_CORRECTION)/dt)*rkd);
 
-
     static int lastTime=0;
     static float integral=0,lastError=0;
     static int inicio=0;
-
     error = (setpoint - entrada);
-
     clock_gettime(CLOCK_MONOTONIC, &ts);
     now = (ts.tv_sec * 1000000000 + ts.tv_nsec)/TIME_FACTOR;
 
@@ -46,9 +41,8 @@ float pid_roll(float entrada){
     lastError = error;
     lastTime = now;
 
-
     //MAPEO A GRADOS
-    if(salidaPID>MAX_salidaPID || salidaPID<MIN_salidaPID) salidaPIDGrados = MAX_CORRECTION;          
+    if(salidaPID>MAX_salidaPID || salidaPID<MIN_salidaPID) salidaPIDGrados = MAX_CORRECTION;
     else if (salidaPID<=MAX_salidaPID && salidaPID>=0) {
       salidaPIDGrados = ((salidaPID/MAX_salidaPID)*MAX_CORRECTION);
     }

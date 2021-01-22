@@ -22,4 +22,4 @@ int setHeightKp(int newValue);
 int setHeightKi(int newValue);
 int setHeightKd(int newValue);
 
-#endif /*PID_HEADER*/
+#endif

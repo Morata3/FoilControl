@@ -51,7 +51,7 @@ LIBS = -L$(NDDSHOME)/lib/$(TARGET_ARCH) \
         $(SYSLIBS)
 
 CDRSOURCES    = dataControl.idl
-SOURCES = $(DATA_DIR)dataControlPlugin.c $(DATA_DIR)dataControl.c $(DATA_DIR)dataControlSupport.c $(DATA_DIR)dataControl_publisher.c $(SOURCE_DIR)PID_pitch.c $(SOURCE_DIR)PID_roll.c $(SOURCE_DIR)PID_height.c
+SOURCES = $(DATA_DIR)dataControlPlugin.c $(DATA_DIR)dataControl.c $(DATA_DIR)dataControlSupport.c $(DATA_DIR)dataControl_publisher.c $(SOURCE_DIR)PID_pitch.c $(SOURCE_DIR)PID_roll.c $(SOURCE_DIR)PID_height.c $(SOURCE_DIR)logger.c
 COMMONSOURCES = $(notdir $(SOURCES))
 
 EXEC          = dataControl_subscriber  
@@ -70,6 +70,9 @@ objs/$(TARGET_ARCH)/%.o : $(DATA_DIR)%.c  $(DATA_DIR)dataControl.h
 	$(COMPILER) $(COMPILER_FLAGS)  -o $@ $(DEFINES) $(INCLUDES) -c $<
 
 objs/$(TARGET_ARCH)/PID%.o : $(SOURCE_DIR)PID%.c $(SOURCE_DIR)PID.h
+	$(COMPILER) -o $@ $(DEFINES) -c $<
+
+objs/$(TARGET_ARCH)/logger.o : $(SOURCE_DIR)logger.c $(SOURCE_DIR)logger.h
 	$(COMPILER) -o $@ $(DEFINES) -c $<
 
 #
