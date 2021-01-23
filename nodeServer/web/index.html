@@ -1,0 +1,31 @@
+<html>
+	<head>
+		<title>Foil Control DSI C1</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+	</head>
+	<body>
+		<h1 id="heading" style="white-space:nowrap;">Hydrofol control system</h1>
+		
+		<div style="word-wrap: break-word">
+			<h3>DDS Log</h3>
+			<textarea id="logDDS" cols=40 rows=10></textarea>
+		</div>
+		<div style="word-wrap: break-word">
+			<h3>Control Log</h3>
+			<textarea id="logControl" cols=40 rows=10></textarea>
+		</div>
+		<div style="word-wrap: break-word">
+			<h3>Communicator Log</h3>
+			<textarea id="logCommunicator" cols=40 rows=10></textarea>
+		</div>
+		
+		<br/>
+		<h3>Status:</h3>
+		<p><span id="status">Not yet connected</span></p>
+
+		<script src="/socket.io/socket.io.js"></script>
+		<script type="text/javascript" src="client.js"></script>
+	</body>
+</html>
+

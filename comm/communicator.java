@@ -342,7 +342,8 @@ public class communicator {
     	    {
 	    	    logFile = new FileWriter(LogfileName,true);
 		    printWriter = new PrintWriter(logFile);	 
-		    printWriter.println(logTime + "-> [" + typeLog + "]" + " -> " + log);
+		    //printWriter.println(logTime + "-> [" + typeLog + "]" + " -> " + log);
+		    printWriter.println("[" + typeLog + "]" + " -> " + log);
     	    } catch (Exception e) {
 	    	    e.printStackTrace();
     	    } finally {

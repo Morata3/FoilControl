@@ -4,6 +4,6 @@
 2.3) Actualizar npm con sudo npm install npm@latest -g
 3.1) Configurar npm: sudo npm config set prefix /usr/local/
 3.2) Instalar socket.io para poder traballar con webSockets: sudo npm install -g socket.io@2.0.4
-4.)
+3.3) Instalar tail pra leer ficheiros: sudo npm install tail
 
 
