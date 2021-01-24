@@ -1,31 +1,49 @@
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>Foil Control DSI C1</title>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+		<style type="text/css" media"all">@import "./style.css";</style>
+		<script src="https://code.highcharts.com/highcharts.js"></script>
+		<script src="https://code.highcharts.com/modules/exporting.js"></script>
+		<script src="https://code.highcharts.com/modules/export-data.js"></script>
+		<script src="https://code.highcharts.com/modules/accessibility.js"></script>
 	</head>
 	<body>
 		<h1 id="heading" style="white-space:nowrap;">Hydrofol control system</h1>
 		
-		<div style="word-wrap: break-word">
-			<h3>DDS Log</h3>
-			<textarea id="logDDS" cols=40 rows=10></textarea>
-		</div>
-		<div style="word-wrap: break-word">
-			<h3>Control Log</h3>
-			<textarea id="logControl" cols=40 rows=10></textarea>
-		</div>
-		<div style="word-wrap: break-word">
-			<h3>Communicator Log</h3>
-			<textarea id="logCommunicator" cols=40 rows=10></textarea>
-		</div>
-		
-		<br/>
-		<h3>Status:</h3>
-		<p><span id="status">Not yet connected</span></p>
+		<figure class="highcharts-figure">
+		    <div id="container"></div>
+		    <p class="highcharts-description">
+		        Altura con respecto a auga.
+		    </p>
+		</figure>
 
+		<div class="logs">	
+			<div class="log">
+				<h3 class="label">DDS Log</h3>
+				<textarea id="logDDS" cols=40 rows=10></textarea>
+			</div>
+			
+			<div class="log">
+				<h3 class="label">Control Log</h3>
+				<textarea id="logControl" cols=40 rows=10></textarea>
+			</div>
+			
+			<div class="log">
+				<h3 class="label">Communicator Log</h3>
+				<textarea id="logCommunicator" cols=40 rows=10></textarea>
+			</div>
+		</div>
+		<br/>
+		<footer>
+			<h3>Status:</h3>
+			<h4><span id="status">Not yet connected</span></h4>
+		</footer>
 		<script src="/socket.io/socket.io.js"></script>
 		<script type="text/javascript" src="client.js"></script>
+		<script type="text/javascript" src="grafico.js"></script>
 	</body>
 </html>
 

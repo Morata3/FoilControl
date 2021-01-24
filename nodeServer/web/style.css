@@ -1,0 +1,37 @@
+div{
+	border-radius: 5px;
+}
+.logs{
+	position: absolute;
+	background-color: AliceBlue;
+	width:100%;
+	display: inline-block;
+}
+.log{
+	position: relative;
+	float:left;
+	display: flex;
+	flex-wrap: wrap;
+	margin: 30px;
+}
+
+.label {
+    background: inherit;
+    padding: 0 5px;
+    position: absolute;
+    left: 5px;
+    top: -40px;
+}
+
+footer {
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	display: flex;
+	flex-direction: row wrap;
+	justify-content: center;
+	padding: 3px;
+	background-color: Azure;
+	color: black;
+}
