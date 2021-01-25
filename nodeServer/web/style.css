@@ -23,6 +23,14 @@ div{
     top: -40px;
 }
 
+#rollGrafica{
+	display: none;
+}
+
+textarea{
+	resize: none;
+}
+
 footer {
 	position: fixed;
 	left: 0;

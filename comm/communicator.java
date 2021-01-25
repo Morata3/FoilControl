@@ -34,7 +34,6 @@ public class communicator {
 	private static BufferedReader input;
     
 	private static final String LogfileName = "../logs/communicator.log";
-	private static final String dateChartfileName = "../logs/dateChart.log";
 	private static SerialPort serialPort;
 	private static String PUERTO; // LINUX 
 	private static final int TIMEOUT = 2000; // Milisegundos
@@ -139,7 +138,7 @@ public class communicator {
                                   String outputLine=new String("01"+ leftAngle
                                       	    +"#02"+ rightAngle
                                       	    +"#03"+ backAngle + "#04"+speed+"\n");
-				  log("SALIDA CONTROL "+ "numero " + ronda++, outputLine);
+				  log("SALIDA CONTROL " + ronda++, outputLine);
                                   try{
                                          // System.out.println(outputLine.getBytes());
                                          output.write(outputLine.getBytes());
@@ -270,7 +269,7 @@ public class communicator {
                 /* Leyendo del ARDUINO y publicando */
 		try{    
 			String inputLine = input.readLine();
-			log("INPUT " + "numero " + printDebug, inputLine);
+			log("INPUT " + printDebug, inputLine);
 	    		String[] componentes = inputLine.split("#");
 			prefijo = componentes[0]; 
 	    		if (prefijo.equals("000")) {
@@ -288,15 +287,12 @@ public class communicator {
 			instance.latitud = Float.parseFloat(latitud);
 
 			instance.height = Float.parseFloat(altura);
-			dateToChart("height",altura);
 			if(pitch.equals("nan") == false){
-				dateToChart("pitch",pitch);		
 				instance.pitch = Float.parseFloat(pitch);
 			}
 			else log("pitch",pitch);
 
                         if(roll.equals("nan") == false){
-				dateToChart("roll",roll);
 				instance.roll = Float.parseFloat(roll);
 			}
 			else log("roll",roll);
@@ -365,26 +361,5 @@ public class communicator {
  		    }
 	    }
 	}
-
-	public static void dateToChart(String dateType, String date){
-	    FileWriter logFile = null;
-	    PrintWriter printWriter = null;
-	    try
-            {
-            	    logFile = new FileWriter(dateChartfileName, true);
-        	    printWriter = new PrintWriter(logFile);	 
-        	    printWriter.println(dateType + "#" + date);
-            } catch (Exception e) {
-            	    e.printStackTrace();
-            } finally {
-            	    try {
-         		    if (logFile != null)
-              			    logFile.close();
-        	    } catch (Exception e2) {
-             		    e2.printStackTrace();
-        	    }
-            }
-	}
 }
-
 

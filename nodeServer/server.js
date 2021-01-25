@@ -70,6 +70,8 @@ io.on('connection', socket => {
 
 	controlWatcher.on("line", data => {
 		socket.emit('control',data + "\n");
+		var dateSplit = data.split(":",2);
+		socket.emit(dateSplit[0],dateSplit[1]);
 	});
 	controlWatcher.on("error", function(error) {
 	  console.log('ERROR: ', error);
@@ -81,13 +83,13 @@ io.on('connection', socket => {
 	communicatorWatcher.on("error", function(error) {
 	  console.log('ERROR: ', error);
 	});
-
+/*
 	chartWatcher.on("line", data => {
 		var dateSplit = data.split("#");
 		socket.emit(dateSplit[0],dateSplit[1]);
 	});
 	chartWatcher.on("error", function(error) {
 	  console.log('ERROR: ', error);
-	});
+	});*/
 });
 

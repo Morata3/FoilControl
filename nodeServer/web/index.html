@@ -13,12 +13,12 @@
 	<body>
 		<h1 id="heading" style="white-space:nowrap;">Hydrofol control system</h1>
 		
-		<figure class="highcharts-figure">
-		    <div id="container"></div>
-		    <p class="highcharts-description">
-		        Altura con respecto a auga.
-		    </p>
-		</figure>
+		<div id="heightGrafica"></div>
+		<div id="rollGrafica"></div>
+		<div id="pitchGrafica"></div>
+	
+		<button onclick="showHeight()">Height chart</button>
+		<button onclick="showImu()">Imu chart</button><br>
 
 		<div class="logs">	
 			<div class="log">
@@ -28,12 +28,12 @@
 			
 			<div class="log">
 				<h3 class="label">Control Log</h3>
-				<textarea id="logControl" cols=40 rows=10></textarea>
+				<textarea id="logControl" cols=60 rows=10></textarea>
 			</div>
 			
 			<div class="log">
 				<h3 class="label">Communicator Log</h3>
-				<textarea id="logCommunicator" cols=40 rows=10></textarea>
+				<textarea id="logCommunicator" cols=80 rows=10></textarea>
 			</div>
 		</div>
 		<br/>
@@ -43,7 +43,24 @@
 		</footer>
 		<script src="/socket.io/socket.io.js"></script>
 		<script type="text/javascript" src="client.js"></script>
-		<script type="text/javascript" src="grafico.js"></script>
+		<script type="text/javascript" src="heightChart.js"></script>
+		<script type="text/javascript" src="rollChart.js"></script>
+
+		<script>
+			function showImu() {
+				document.getElementById("heightGrafica").style.display = "none";
+				document.getElementById("rollGrafica").style.display = "block";
+			}
+		</script>
+	
+		<script>
+			function showHeight() {
+				document.getElementById("heightGrafica").style.display = "block";
+				document.getElementById("rollGrafica").style.display = "none";
+			}
+		</script>
+
+
 	</body>
 </html>
 
